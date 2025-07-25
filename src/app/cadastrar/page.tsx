@@ -28,7 +28,6 @@ import {
   validateFullName,
   validateCEP
 } from '@/utils/validators'
-import { criarUsuario } from '@/store/Usuario'
 import toast from 'react-hot-toast'
 import BaseLayout from '@/templates/BaseLayout'
 

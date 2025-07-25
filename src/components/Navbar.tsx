@@ -30,7 +30,7 @@ export default function Navbar() {
   ]
 
   return (
-    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 w-[90%] h-[60px] flex items-center justify-between rounded-3xl bg-white shadow-lg z-50">
+    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 md:w-[40%] w-[90%] h-[60px] flex items-center justify-between rounded-3xl bg-white shadow-lg z-50">
       <div className="w-full flex items-center justify-between gap-3 px-4">
         {navItems.map((item, index) => {
           const isActive = pathname === item.route

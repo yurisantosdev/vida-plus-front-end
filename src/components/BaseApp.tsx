@@ -68,15 +68,15 @@ export default function BaseApp({
         <div className="fixed top-0 left-0 w-full h-full bg-black/60 backdrop-blur-xs flex justify-center items-center z-[99999999]">
           <div className="flex flex-col items-center gap-4">
             <div className="relative">
-              <div className="animate-spin rounded-full h-24 w-24 border-4 border-orange-1000/30"></div>
-              <div className="animate-spin rounded-full h-24 w-24 border-4 border-t-orange-1000 border-r-orange-1000 absolute top-0 left-0"></div>
+              <div className="animate-spin rounded-full h-24 w-24 border-4 border-blue-600/30"></div>
+              <div className="animate-spin rounded-full h-24 w-24 border-4 border-t-blue-600 border-r-blue-600 absolute top-0 left-0"></div>
             </div>
             <p className="text-white text-lg font-medium">Carregando...</p>
           </div>
         </div>
       )}
 
-      <ModalTrocaSenha />
+      {/* <ModalTrocaSenha /> */}
     </div>
   )
 }

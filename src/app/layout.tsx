@@ -3,7 +3,7 @@ import './globals.css'
 import ReduxProvider from '@/redux/ReduxProvider'
 
 export const metadata: Metadata = {
-  title: 'FiscalizaAí',
+  title: 'Vida+',
   description: ''
 }
 

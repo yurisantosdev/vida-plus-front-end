@@ -18,6 +18,7 @@ import { CLickLabel } from '@/services/clickLabel'
 import AbaNotificacoes from './Abanotificacoes'
 import AbaPerfil from './AbaPerfil'
 import { atualizarNotificacoes } from '@/services/atualizarNotificacoes'
+import { ListChecks } from '@phosphor-icons/react/dist/ssr'
 
 export default function BarraMenu() {
   const dispatch = useDispatch()
@@ -137,7 +138,8 @@ export default function BarraMenu() {
           onClick={() => {
             router.push('/home')
           }}>
-          <Image src={iconeSemFundo} className="w-[120px]" alt={''} />
+          <ListChecks size={40} className="text-white" />
+          {/* <Image src={iconeSemFundo} className="w-[120px]" alt={''} /> */}
         </div>
 
         <div className="navbar-end">
@@ -153,7 +155,7 @@ export default function BarraMenu() {
         </div>
       </div>
 
-      <AbaNotificacoes />
+      {/* <AbaNotificacoes /> */}
       <AbaPerfil />
     </div>
   )

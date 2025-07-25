@@ -2,7 +2,7 @@
 import BaseApp from '@/components/BaseApp'
 import React from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft } from '@phosphor-icons/react'
+import { ArrowLeft, CaretLeft } from '@phosphor-icons/react'
 import { useSelector } from 'react-redux'
 import { BaseLayoutInterface } from '@/Interfaces/BaseLayoutInterface'
 
@@ -16,15 +16,22 @@ export default function BaseLayout({
   buttonVoltar = false,
   styleBase = true,
   menu = true,
+  navbar = true,
+  voltar = false,
   extraComponentLeft,
   extraComponentRigth,
+  extraComponent,
   description
 }: BaseLayoutInterface) {
   const router = useRouter()
   const loading = useSelector((state: any) => state.loadingReducer.loading)
 
   return (
-    <BaseApp loading={loading} styleBase={styleBase} menu={menu}>
+    <BaseApp
+      loading={loading}
+      styleBase={styleBase}
+      menu={menu}
+      navbar={navbar}>
       <div className="md:w-[92%] w-full mx-auto mt-2">
         <div className="bg-white/80 backdrop-blur-sm p-2 rounded-xl shadow-lg border border-gray-300">
           {/* Cabeçalho */}
@@ -46,6 +53,15 @@ export default function BaseLayout({
           <div className="flex justify-center items-center mb-6">
             <div className="w-[20%] flex justify-start items-center">
               {extraComponentLeft}
+              {voltar && (
+                <span
+                  onClick={() => {
+                    router.back()
+                  }}
+                  className="cursor-pointer">
+                  <CaretLeft size={25} className="text-black" />
+                </span>
+              )}
             </div>
 
             <div className="w-[70%] flex justify-center items-center">
@@ -67,6 +83,8 @@ export default function BaseLayout({
           <div>{children}</div>
         </div>
       </div>
+
+      {extraComponent}
 
       <style jsx global>{`
         .animate-slide-up {
