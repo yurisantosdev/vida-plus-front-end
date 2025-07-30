@@ -13,10 +13,8 @@ export default function Garage() {
   const user: UsuarioType = useSelector((state: any) => state.userReducer)
 
   return (
-    <span>
-      <BaseLayout title="Garage">
-        <p>Em desenvolvimento</p>
-      </BaseLayout>
-    </span>
+    <BaseLayout title="Garage">
+      <p className="text-center text-black text-2xl">Em desenvolvimento</p>
+    </BaseLayout>
   )
 }

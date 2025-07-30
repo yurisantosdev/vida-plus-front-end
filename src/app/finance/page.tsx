@@ -14,10 +14,9 @@ export default function Finance() {
   const user: UsuarioType = useSelector((state: any) => state.userReducer)
 
   return (
-    <span>
-      <BaseLayout title="Finance">
-        <CardSaldos />
-      </BaseLayout>
-    </span>
+    <BaseLayout title="Finance">
+      <p className="text-center text-black text-2xl">Em desenvolvimento</p>
+      <CardSaldos />
+    </BaseLayout>
   )
 }

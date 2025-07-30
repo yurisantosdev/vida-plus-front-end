@@ -13,10 +13,8 @@ export default function Calendar() {
   const user: UsuarioType = useSelector((state: any) => state.userReducer)
 
   return (
-    <span>
-      <BaseLayout title="Calendar">
-        <p>Em desenvolvimento</p>
-      </BaseLayout>
-    </span>
+    <BaseLayout title="Calendar">
+      <p className="text-center text-black text-2xl">Em desenvolvimento</p>
+    </BaseLayout>
   )
 }
