@@ -2,15 +2,12 @@
 import React, { useEffect } from 'react'
 import { Toaster } from 'react-hot-toast'
 import { BaseAppInterface } from '@/Interfaces/BaseAppInterface'
-import BarraMenu from './BarraMenu/BarraMenu'
-import ModalTrocaSenha from './ModalTrocaSenha'
 import Navbar from './Navbar'
 
 export default function BaseApp({
   children,
   loading,
   styleBase = true,
-  menu = true,
   navbar = true,
   extraComponentTitle
 }: BaseAppInterface) {
@@ -32,11 +29,9 @@ export default function BaseApp({
         className={`${
           styleBase && 'md:w-[65%] w-full md:m-auto bg-gray-100 p-2 '
         }`}>
-        {menu && <BarraMenu />}
+        {navbar && <Navbar />}
         {extraComponentTitle && extraComponentTitle}
         {children}
-
-        {navbar && <Navbar />}
       </div>
 
       <Toaster
@@ -75,8 +70,6 @@ export default function BaseApp({
           </div>
         </div>
       )}
-
-      {/* <ModalTrocaSenha /> */}
     </div>
   )
 }
