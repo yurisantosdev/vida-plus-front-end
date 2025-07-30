@@ -18,13 +18,13 @@ import {
 } from '@phosphor-icons/react'
 import CardVeiculo from './_components/CardVeiculo'
 import CardFuncionalidade from './_components/CardFuncionalidade'
-import { BarChart, Bar, XAxis, ResponsiveContainer } from 'recharts'
 import { Button } from '@/components/Button'
 import { VeiculosType } from '@/types/VeiculosType'
 import { findAllVeiculos } from '@/store/Veiculos'
 import { setLoading } from '@/redux/loading/actions'
 import { findTotalGastoAbastecimentos } from '@/store/Abastecimentos'
 import { FormatarValorEmReais } from '@/services/formatters'
+import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer } from 'recharts'
 
 export default function Garage() {
   AuthUser()
@@ -35,6 +35,33 @@ export default function Garage() {
   const [valoresAbastecimento, setValoresAbastecimento] = useState()
   const [valorTotalAbastecimento, setValorTotalAbastecimento] =
     useState<string>()
+
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-white border border-gray-300 rounded-lg p-2 shadow-lg">
+          <p className="text-sm text-gray-600">{label}</p>
+          <p className="text-lg font-semibold text-black">
+            R$ {payload[0].value.toFixed(2)}
+          </p>
+        </div>
+      )
+    }
+
+    return null
+  }
+
+  function useWindowWidth() {
+    const [width, setWidth] = useState(window.innerWidth)
+
+    useEffect(() => {
+      const handleResize = () => setWidth(window.innerWidth)
+      window.addEventListener('resize', handleResize)
+      return () => window.removeEventListener('resize', handleResize)
+    }, [])
+
+    return width
+  }
 
   useEffect(() => {
     const consultaDados = async () => {
@@ -180,7 +207,15 @@ export default function Garage() {
           <div className="w-full h-32">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={valoresAbastecimento}>
-                <XAxis dataKey="name" axisLine={false} tickLine={false} />
+                <XAxis
+                  dataKey="name"
+                  axisLine={false}
+                  tickLine={false}
+                  interval="preserveStartEnd"
+                  angle={-90}
+                  textAnchor="end"
+                />
+                <Tooltip content={<CustomTooltip />} />
                 <Bar dataKey="value" fill="#ef4444" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -209,7 +244,15 @@ export default function Garage() {
           <div className="w-full h-32">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={valoresAbastecimento}>
-                <XAxis dataKey="name" axisLine={false} tickLine={false} />
+                <XAxis
+                  dataKey="name"
+                  axisLine={false}
+                  tickLine={false}
+                  interval="preserveStartEnd"
+                  angle={-90}
+                  textAnchor="end"
+                />
+                <Tooltip content={<CustomTooltip />} />
                 <Bar dataKey="value" fill="#155dfc" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -238,7 +281,15 @@ export default function Garage() {
           <div className="w-full h-32">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={valoresAbastecimento}>
-                <XAxis dataKey="name" axisLine={false} tickLine={false} />
+                <XAxis
+                  dataKey="name"
+                  axisLine={false}
+                  tickLine={false}
+                  interval="preserveStartEnd"
+                  angle={-90}
+                  textAnchor="end"
+                />
+                <Tooltip content={<CustomTooltip />} />
                 <Bar dataKey="value" fill="#16a34a" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
