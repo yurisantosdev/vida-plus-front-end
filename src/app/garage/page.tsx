@@ -23,6 +23,8 @@ import { Button } from '@/components/Button'
 import { VeiculosType } from '@/types/VeiculosType'
 import { findAllVeiculos } from '@/store/Veiculos'
 import { setLoading } from '@/redux/loading/actions'
+import { findTotalGastoAbastecimentos } from '@/store/Abastecimentos'
+import { FormatarValorEmReais } from '@/services/formatters'
 
 export default function Garage() {
   AuthUser()
@@ -30,30 +32,38 @@ export default function Garage() {
   const dispatch = useDispatch()
   const user: UsuarioType = useSelector((state: any) => state.userReducer)
   const [veiculos, setVeiculos] = useState<VeiculosType[]>([])
-  const data = [
-    { name: 'Jan', value: 350 },
-    { name: 'Fev', value: 420 },
-    { name: 'Mar', value: 300 },
-    { name: 'Abr', value: 500 },
-    { name: 'Mai', value: 470 }
-  ]
+  const [valoresAbastecimento, setValoresAbastecimento] = useState()
+  const [valorTotalAbastecimento, setValorTotalAbastecimento] =
+    useState<string>()
 
   useEffect(() => {
     const consultaDados = async () => {
-      if (user.uscodigo) {
-        dispatch(setLoading(true))
-        const response = await findAllVeiculos(user.uscodigo)
+      if (!user.uscodigo) return
 
-        if (response != undefined) {
-          setVeiculos(response.veiculos)
-        }
+      dispatch(setLoading(true))
 
-        dispatch(setLoading(false))
+      const [responseVeiculos, responseTotalGastoAbastecimentos] =
+        await Promise.all([
+          findAllVeiculos(user.uscodigo),
+          findTotalGastoAbastecimentos(user.uscodigo)
+        ])
+
+      if (responseVeiculos?.veiculos) {
+        setVeiculos(responseVeiculos.veiculos)
       }
+
+      if (responseTotalGastoAbastecimentos) {
+        setValoresAbastecimento(responseTotalGastoAbastecimentos.valores)
+        setValorTotalAbastecimento(
+          FormatarValorEmReais(responseTotalGastoAbastecimentos.valorTotal)
+        )
+      }
+
+      dispatch(setLoading(false))
     }
 
     consultaDados()
-  }, [])
+  }, [user.uscodigo])
 
   return (
     <BaseLayout title="Garage">
@@ -159,7 +169,9 @@ export default function Garage() {
               </span>
               <span className="text-sm text-gray-500 mt-1">
                 Total gasto:{' '}
-                <strong className="text-red-600">R$ 2.040,00</strong>
+                <strong className="text-red-600">
+                  {valorTotalAbastecimento}
+                </strong>
               </span>
             </div>
           </div>
@@ -167,7 +179,7 @@ export default function Garage() {
           {/* Gráfico de barras */}
           <div className="w-full h-32">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={data}>
+              <BarChart data={valoresAbastecimento}>
                 <XAxis dataKey="name" axisLine={false} tickLine={false} />
                 <Bar dataKey="value" fill="#ef4444" radius={[4, 4, 0, 0]} />
               </BarChart>
@@ -196,7 +208,7 @@ export default function Garage() {
           {/* Gráfico de barras */}
           <div className="w-full h-32">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={data}>
+              <BarChart data={valoresAbastecimento}>
                 <XAxis dataKey="name" axisLine={false} tickLine={false} />
                 <Bar dataKey="value" fill="#155dfc" radius={[4, 4, 0, 0]} />
               </BarChart>
@@ -225,7 +237,7 @@ export default function Garage() {
           {/* Gráfico de barras */}
           <div className="w-full h-32">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={data}>
+              <BarChart data={valoresAbastecimento}>
                 <XAxis dataKey="name" axisLine={false} tickLine={false} />
                 <Bar dataKey="value" fill="#16a34a" radius={[4, 4, 0, 0]} />
               </BarChart>

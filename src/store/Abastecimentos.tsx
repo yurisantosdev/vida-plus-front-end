@@ -67,3 +67,16 @@ export const findVeiculo = async (abcodigo: string) => {
       )
     })
 }
+
+export const findTotalGastoAbastecimentos = async (uscodigo: string) => {
+  return await api
+    .get(`/abastecimentos/find/total/gasto/${uscodigo}`)
+    .then((response) => {
+      return response.data
+    })
+    .catch((error) => {
+      toast.error(
+        'Não foi possível realizar a consulta do total dos abastecimentos, por favor tente novamente!'
+      )
+    })
+}
