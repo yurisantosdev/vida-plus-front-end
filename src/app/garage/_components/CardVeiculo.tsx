@@ -13,7 +13,7 @@ export default function CardVeiculo({
   return (
     <div
       {...props}
-      className={`border  rounded-2xl p-4 shadow-sm hover:shadow-md hover:bg-gray-50 active:bg-gray-100 active:scale-95 cursor-pointer transition-all duration-300 flex justify-between items-center mb-3 ${
+      className={`border rounded-2xl p-4 shadow-sm hover:shadow-md hover:bg-gray-50 active:bg-gray-100 active:scale-95 cursor-pointer transition-all duration-300 flex justify-between items-center mb-3 ${
         props.className
       } ${
         select ? 'bg-blue-100 border-blue-400' : 'border-gray-200 bg-white '

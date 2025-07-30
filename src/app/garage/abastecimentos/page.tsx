@@ -8,7 +8,6 @@ import BaseLayout from '@/templates/BaseLayout'
 import Subtitle from '@/components/Subtitle'
 import {
   CalendarDots,
-  CurrencyCircleDollar,
   GasPump,
   Gauge,
   ListBullets,

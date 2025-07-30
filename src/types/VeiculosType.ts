@@ -5,6 +5,7 @@ export type VeiculosType = {
   veplaca: string;
   veusuario: string;
   venome: string;
+  vehodometro: any;
   createdAt?: string;
   updatedAt?: string;
   usuario?: UsuarioType;

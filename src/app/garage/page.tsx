@@ -1,6 +1,6 @@
 'use client'
 import { AuthUser } from '@/services/auth'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { UsuarioType } from '@/types/UsuariosType'
 import { useRouter } from 'next/navigation'
@@ -11,17 +11,25 @@ import {
   ListBullets,
   Wrench,
   CurrencyCircleDollar,
-  GearSix
+  GearSix,
+  Plus,
+  Warning,
+  Info
 } from '@phosphor-icons/react'
 import CardVeiculo from './_components/CardVeiculo'
 import CardFuncionalidade from './_components/CardFuncionalidade'
 import { BarChart, Bar, XAxis, ResponsiveContainer } from 'recharts'
+import { Button } from '@/components/Button'
+import { VeiculosType } from '@/types/VeiculosType'
+import { findAllVeiculos } from '@/store/Veiculos'
+import { setLoading } from '@/redux/loading/actions'
 
 export default function Garage() {
   AuthUser()
   const router = useRouter()
   const dispatch = useDispatch()
   const user: UsuarioType = useSelector((state: any) => state.userReducer)
+  const [veiculos, setVeiculos] = useState<VeiculosType[]>([])
   const data = [
     { name: 'Jan', value: 350 },
     { name: 'Fev', value: 420 },
@@ -30,16 +38,68 @@ export default function Garage() {
     { name: 'Mai', value: 470 }
   ]
 
+  useEffect(() => {
+    const consultaDados = async () => {
+      if (user.uscodigo) {
+        dispatch(setLoading(true))
+        const response = await findAllVeiculos(user.uscodigo)
+
+        if (response != undefined) {
+          setVeiculos(response.veiculos)
+        }
+
+        dispatch(setLoading(false))
+      }
+    }
+
+    consultaDados()
+  }, [])
+
   return (
     <BaseLayout title="Garage">
       {/* Veículos */}
-      <div className="max-h-[250px] overflow-x-scroll transition-all animate-slide-up">
+      <div className="transition-all animate-slide-up">
         <Subtitle
           title="Meu Veículos"
           icon={<ListBullets size={20} className="text-black" />}
         />
 
-        <CardVeiculo placa="SXA2F08" veiculo="Onix LTZ" hodometro="11.022" />
+        {/* Botão de Cadastrar Novo Veículo */}
+        <div className="flex items-center justify-center mt-3 mb-2">
+          <Button
+            title="Cadastrar novo veículo"
+            className="bg-black"
+            iconRight={<Plus size={20} />}
+            onClick={() => {
+              router.push('/garage/cadastro')
+            }}
+          />
+        </div>
+
+        <div className="max-h-[250px] overflow-x-scroll mt-5">
+          {veiculos.length > 0 ? (
+            veiculos.map((veiculo: VeiculosType, index: number) => {
+              return (
+                <CardVeiculo
+                  key={index}
+                  placa={veiculo.veplaca}
+                  veiculo={veiculo.venome}
+                  hodometro={veiculo.vehodometro}
+                />
+              )
+            })
+          ) : (
+            <div className="border rounded-2xl p-4 shadow-sm border-gray-200 bg-white">
+              <Info
+                size={40}
+                className="text-black text-center w-full m-auto"
+              />
+              <p className="text-center text-black">
+                Nenhum veículo cadastrado
+              </p>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Funcionalidades */}
@@ -50,6 +110,7 @@ export default function Garage() {
         />
 
         <div className="grid grid-cols-3 gap-3 transition-all animate-slide-up">
+          {/* Cadastrar abastecimento */}
           <CardFuncionalidade
             className="bg-red-200 hover:bg-red-300 active:bg-red-200"
             onClick={() => {
@@ -58,6 +119,7 @@ export default function Garage() {
             icon={<GasPump size={40} className="text-red-600" />}
           />
 
+          {/* Cadastrar manutenções */}
           <CardFuncionalidade
             className="bg-blue-200 hover:bg-blue-300 active:bg-blue-200"
             onClick={() => {
@@ -66,6 +128,7 @@ export default function Garage() {
             icon={<Wrench size={40} className="text-blue-600" />}
           />
 
+          {/* Cadastrar despesas */}
           <CardFuncionalidade
             className="bg-green-200 hover:bg-green-300 active:bg-green-200"
             onClick={() => {
