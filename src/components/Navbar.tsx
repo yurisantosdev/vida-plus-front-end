@@ -79,7 +79,7 @@ export default function Navbar() {
                         isActive
                           ? 'bg-gray-700 text-white'
                           : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-                        'rounded-md px-3 py-2 text-sm font-medium cursor-pointer'
+                        'rounded-md px-3 py-2 text-sm font-medium cursor-pointer select-none'
                       )}>
                       <div className="flex justify-start items-center gap-3">
                         {item.icon}
@@ -152,7 +152,7 @@ export default function Navbar() {
                   isActive
                     ? 'bg-gray-700 text-white'
                     : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-                  'block rounded-md px-3 py-2 text-base font-medium'
+                  'block rounded-md px-3 py-2 text-base font-medium select-none'
                 )}>
                 <div className="flex justify-start items-center gap-3">
                   {item.icon}
