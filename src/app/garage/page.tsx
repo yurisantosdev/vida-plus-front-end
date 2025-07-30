@@ -51,18 +51,6 @@ export default function Garage() {
     return null
   }
 
-  function useWindowWidth() {
-    const [width, setWidth] = useState(window.innerWidth)
-
-    useEffect(() => {
-      const handleResize = () => setWidth(window.innerWidth)
-      window.addEventListener('resize', handleResize)
-      return () => window.removeEventListener('resize', handleResize)
-    }, [])
-
-    return width
-  }
-
   useEffect(() => {
     const consultaDados = async () => {
       if (!user.uscodigo) return
