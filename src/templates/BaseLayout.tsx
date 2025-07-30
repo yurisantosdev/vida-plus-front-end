@@ -15,7 +15,6 @@ export default function BaseLayout({
   extraHeaderContent,
   buttonVoltar = false,
   styleBase = true,
-  menu = true,
   navbar = true,
   voltar = false,
   extraComponentLeft,
@@ -27,12 +26,8 @@ export default function BaseLayout({
   const loading = useSelector((state: any) => state.loadingReducer.loading)
 
   return (
-    <BaseApp
-      loading={loading}
-      styleBase={styleBase}
-      menu={menu}
-      navbar={navbar}>
-      <div className="md:w-[92%] w-full mx-auto mt-2">
+    <BaseApp loading={loading} styleBase={styleBase} navbar={navbar}>
+      <div className="w-full mx-auto mt-2">
         <div className="bg-white/80 backdrop-blur-sm p-2 rounded-xl shadow-lg border border-gray-300">
           {/* Cabeçalho */}
           {buttonVoltar && (
@@ -59,14 +54,14 @@ export default function BaseLayout({
                     router.back()
                   }}
                   className="cursor-pointer">
-                  <CaretLeft size={25} className="text-black" />
+                  <CaretLeft size={22} className="text-black" />
                 </span>
               )}
             </div>
 
             <div className="w-[70%] flex justify-center items-center">
               <div>
-                <h1 className="text-2xl truncate font-bold text-gray-700 text-center">
+                <h1 className="text-xl truncate font-bold text-gray-700 text-center">
                   {title}
                 </h1>
 

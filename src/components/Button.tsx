@@ -13,7 +13,7 @@ export function Button({
   return (
     <button
       {...props}
-      className={`flex justify-center items-center gap-2 p-2 rounded-md text-md active:scale-95 duration-200 bg-blue-700 hover:bg-blue-800 active:bg-blue-700 ${
+      className={`transition-all flex justify-center items-center gap-2 p-2 rounded-md text-md active:scale-95 duration-200 bg-blue-700 hover:bg-blue-800 active:bg-blue-700 ${
         props.disabled ? 'cursor-not-allowed' : 'cursor-pointer'
       } ${props.className ?? ''}`}>
       {iconLeft}
