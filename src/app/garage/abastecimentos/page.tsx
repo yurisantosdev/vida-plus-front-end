@@ -10,7 +10,9 @@ import {
   CalendarDots,
   GasPump,
   Gauge,
+  Info,
   ListBullets,
+  Plus,
   Tag
 } from '@phosphor-icons/react'
 import CardVeiculo from '../_components/CardVeiculo'
@@ -22,13 +24,15 @@ import { Button } from '@/components/Button'
 import toast from 'react-hot-toast'
 import { setLoading } from '@/redux/loading/actions'
 import { FormatarValorEmReais } from '@/services/formatters'
+import { findAllVeiculos } from '@/store/Veiculos'
+import { VeiculosType } from '@/types/VeiculosType'
+import { createAbastecimento } from '@/store/Abastecimentos'
 
 export default function Abastecimentos() {
   AuthUser()
   const {
     handleSubmit,
     register,
-    setValue,
     watch,
     reset,
     formState: { errors }
@@ -39,7 +43,8 @@ export default function Abastecimentos() {
       abvalorlitro: 0,
       abveiculo: '',
       abhodometro: 0,
-      abquando: ''
+      abquando: '',
+      abusuario: ''
     }
   })
   const router = useRouter()
@@ -47,27 +52,53 @@ export default function Abastecimentos() {
   const [veiculoSelecionado, setVeiculoSelecionado] = useState<string>('')
   const [valorTotal, setValorTotal] = useState<number>(0)
   const user: UsuarioType = useSelector((state: any) => state.userReducer)
+  const [veiculos, setVeiculos] = useState<VeiculosType[]>([])
 
   async function onSalvarAbastecimento(data: AbastecimentosType) {
-    dispatch(setLoading(true))
+    if (user.uscodigo) {
+      dispatch(setLoading(true))
 
-    if (veiculoSelecionado.length <= 0) {
-      toast('Selecione um veículo!')
+      if (veiculoSelecionado.length <= 0) {
+        toast('Selecione um veículo!')
+        dispatch(setLoading(false))
+        return
+      }
+
+      data.abveiculo = veiculoSelecionado
+      data.abusuario = user.uscodigo
+      data.abvalortotal = parseFloat(valorTotal.toFixed(2))
+      data.abhodometro = parseInt(data.abhodometro, 10)
+      data.abvalorlitro = parseFloat(data.abvalorlitro)
+      data.ablitros = parseFloat(data.ablitros)
+
+      const response = await createAbastecimento(data)
+
+      if (response != undefined) {
+        toast.success('Abastecimento registrado com sucesso!')
+        reset()
+        router.back()
+      }
+
       dispatch(setLoading(false))
-      return
+    }
+  }
+
+  useEffect(() => {
+    const consultaDados = async () => {
+      if (user.uscodigo) {
+        dispatch(setLoading(true))
+        const response = await findAllVeiculos(user.uscodigo)
+
+        if (response != undefined) {
+          setVeiculos(response.veiculos)
+        }
+
+        dispatch(setLoading(false))
+      }
     }
 
-    data.abveiculo = veiculoSelecionado
-    data.abvalortotal = parseFloat(valorTotal.toFixed(2))
-
-    toast.success('Abastecimento registrado com sucesso!')
-
-    console.log(data)
-
-    setTimeout(() => {
-      dispatch(setLoading(false))
-    }, 1000)
-  }
+    consultaDados()
+  }, [])
 
   useEffect(() => {
     setValorTotal(watch('ablitros') * watch('abvalorlitro'))
@@ -81,16 +112,56 @@ export default function Abastecimentos() {
           icon={<ListBullets size={20} className="text-black" />}
         />
 
-        <CardVeiculo
-          placa="SXA2F08"
-          veiculo="Onix LTZ"
-          hodometro="11.022"
-          acess={false}
-          select={veiculoSelecionado == 'SXA2F08'}
-          onClick={() => {
-            setVeiculoSelecionado('SXA2F08')
-          }}
-        />
+        <div className="max-h-[250px] overflow-x-scroll mt-5">
+          {veiculos.length > 0 ? (
+            veiculos.map((veiculo: VeiculosType, index: number) => {
+              const isSelect = veiculoSelecionado == veiculo.vecodigo
+
+              return (
+                <CardVeiculo
+                  key={index}
+                  placa={veiculo.veplaca}
+                  veiculo={veiculo.venome}
+                  hodometro={veiculo.vehodometro}
+                  acess={false}
+                  select={isSelect}
+                  onClick={() => {
+                    if (veiculo.vecodigo) {
+                      if (veiculoSelecionado == veiculo.vecodigo) {
+                        setVeiculoSelecionado('')
+                      } else {
+                        setVeiculoSelecionado(veiculo.vecodigo)
+                      }
+                    }
+                  }}
+                />
+              )
+            })
+          ) : (
+            <div>
+              <div className="flex items-center justify-center mb-4">
+                <Button
+                  title="Cadastrar novo veículo"
+                  className="bg-black"
+                  iconRight={<Plus size={20} />}
+                  onClick={() => {
+                    router.push('/garage/cadastro')
+                  }}
+                />
+              </div>
+
+              <div className="border rounded-2xl p-4 shadow-sm border-gray-200 bg-white">
+                <Info
+                  size={40}
+                  className="text-black text-center w-full m-auto"
+                />
+                <p className="text-center text-black">
+                  Nenhum veículo cadastrado
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="mt-5 transition-all animate-slide-up">
@@ -119,23 +190,9 @@ export default function Abastecimentos() {
             styleLabel="text-gray-700 font-medium"
             requiredItem
             {...register('ablitros', {
-              required: true,
-              min: {
-                value: 0.01,
-                message: 'Informe um valor maior que zero'
-              }
+              required: true
             })}
-            textError={
-              errors.ablitros && (
-                <span className="text-red-600 text-sm">
-                  {errors.ablitros.message ? (
-                    <TextRequired title={errors.ablitros.message} />
-                  ) : (
-                    <TextRequired />
-                  )}
-                </span>
-              )
-            }
+            textError={errors.ablitros && <TextRequired />}
             error={errors.ablitros}
           />
         </div>
@@ -152,23 +209,9 @@ export default function Abastecimentos() {
             styleLabel="text-gray-700 font-medium"
             requiredItem
             {...register('abvalorlitro', {
-              required: true,
-              min: {
-                value: 0.01,
-                message: 'Informe um valor maior que zero'
-              }
+              required: true
             })}
-            textError={
-              errors.abvalorlitro && (
-                <span className="text-red-600 text-sm">
-                  {errors.abvalorlitro.message ? (
-                    <TextRequired title={errors.abvalorlitro.message} />
-                  ) : (
-                    <TextRequired />
-                  )}
-                </span>
-              )
-            }
+            textError={errors.abvalorlitro && <TextRequired />}
             error={errors.abvalorlitro}
           />
         </div>
@@ -185,23 +228,9 @@ export default function Abastecimentos() {
             styleLabel="text-gray-700 font-medium"
             requiredItem
             {...register('abhodometro', {
-              required: true,
-              min: {
-                value: 0.01,
-                message: 'Informe um valor maior que zero'
-              }
+              required: true
             })}
-            textError={
-              errors.abhodometro && (
-                <span className="text-red-600 text-sm">
-                  {errors.abhodometro.message ? (
-                    <TextRequired title={errors.abhodometro.message} />
-                  ) : (
-                    <TextRequired />
-                  )}
-                </span>
-              )
-            }
+            textError={errors.abhodometro && <TextRequired />}
             error={errors.abhodometro}
           />
         </div>
