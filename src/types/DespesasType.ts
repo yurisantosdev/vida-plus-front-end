@@ -1,5 +1,6 @@
 import { CategoriasDespesasType } from './CategoriasDespesasType';
 import { VeiculosType } from './VeiculosType';
+import { UsuarioType } from './UsuariosType';
 
 export type DespesasType = {
   dpcodigo?: string;
@@ -8,9 +9,11 @@ export type DespesasType = {
   dpcategoria: string;
   dpveiculo: string;
   dpquando: string;
-  dpkm: number;
+  dphodometro: number;
+  dpusuario: string;
   createdAt?: string;
   updatedAt?: string;
   veiculo?: VeiculosType;
   categoria?: CategoriasDespesasType;
+  usuario?: UsuarioType;
 };

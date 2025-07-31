@@ -26,6 +26,7 @@ import { findTotalGastoAbastecimentos } from '@/store/Abastecimentos'
 import { FormatarValorEmReais } from '@/services/formatters'
 import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer } from 'recharts'
 import { findTotalGastoManutencoes } from '@/store/Manutencoes'
+import { findTotalGastoDespesas } from '@/store/Despesas'
 
 export default function Garage() {
   AuthUser()
@@ -36,9 +37,10 @@ export default function Garage() {
   const [valoresAbastecimento, setValoresAbastecimento] = useState()
   const [valorTotalAbastecimento, setValorTotalAbastecimento] =
     useState<string>()
-
   const [valoresManutencoes, setValoresManutencoes] = useState()
   const [valorTotalManutencao, setValorTotalManutencao] = useState<string>()
+  const [valoresDespesas, setValoresDespesas] = useState()
+  const [valorTotalDespesa, setValorTotalDespesa] = useState<string>()
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
@@ -64,11 +66,13 @@ export default function Garage() {
       const [
         responseVeiculos,
         responseTotalGastoAbastecimentos,
-        responseTotalGastoManutencoes
+        responseTotalGastoManutencoes,
+        responseTotalGastoDespesas
       ] = await Promise.all([
         findAllVeiculos(user.uscodigo),
         findTotalGastoAbastecimentos(user.uscodigo),
-        findTotalGastoManutencoes(user.uscodigo)
+        findTotalGastoManutencoes(user.uscodigo),
+        findTotalGastoDespesas(user.uscodigo)
       ])
 
       if (responseVeiculos?.veiculos) {
@@ -86,6 +90,13 @@ export default function Garage() {
         setValoresManutencoes(responseTotalGastoManutencoes.valores)
         setValorTotalManutencao(
           FormatarValorEmReais(responseTotalGastoManutencoes.valorTotal)
+        )
+      }
+
+      if (responseTotalGastoDespesas) {
+        setValoresDespesas(responseTotalGastoDespesas.valores)
+        setValorTotalDespesa(
+          FormatarValorEmReais(responseTotalGastoDespesas.valorTotal)
         )
       }
 
@@ -293,7 +304,7 @@ export default function Garage() {
               </span>
               <span className="text-sm text-gray-500 mt-1">
                 Total gasto:{' '}
-                <strong className="text-green-600">R$ 2.040,00</strong>
+                <strong className="text-green-600">{valorTotalDespesa}</strong>
               </span>
             </div>
           </div>
@@ -307,7 +318,7 @@ export default function Garage() {
                   height: '200px'
                 }}>
                 <ResponsiveContainer>
-                  <BarChart data={valoresAbastecimento}>
+                  <BarChart data={valoresDespesas}>
                     <XAxis
                       dataKey="name"
                       axisLine={true}
