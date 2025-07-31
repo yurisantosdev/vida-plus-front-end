@@ -141,7 +141,7 @@ export default function Garage() {
               )
             })
           ) : (
-            <div className="border rounded-2xl p-4 shadow-sm border-gray-200 bg-white">
+            <div className="border rounded-2xl p-4 shadow-sm border-gray-200 bg-white mb-5">
               <Info
                 size={40}
                 className="text-black text-center w-full m-auto"
@@ -155,8 +155,8 @@ export default function Garage() {
       </div>
 
       {/* Funcionalidades */}
-        <FuncionalidadesGarage />
-        
+      <FuncionalidadesGarage />
+
       {/* Gastos */}
       <div className="mt-5 transition-all animate-slide-up">
         <Subtitle
