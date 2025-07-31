@@ -155,10 +155,8 @@ export default function Garage() {
       </div>
 
       {/* Funcionalidades */}
-      <div className="border border-gray-200 rounded-2xl bg-white shadow-sm hover:shadow-md transition-all duration-300 flex flex-col gap-4 mb-3 p-4">
         <FuncionalidadesGarage />
-      </div>
-
+        
       {/* Gastos */}
       <div className="mt-5 transition-all animate-slide-up">
         <Subtitle

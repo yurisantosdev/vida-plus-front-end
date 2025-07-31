@@ -19,7 +19,7 @@ export default function FuncionalidadesGarage() {
         icon={<GearSix size={20} className="text-black" />}
       />
 
-      <div className="grid grid-cols-3 gap-3 transition-all animate-slide-up">
+      <div className="grid grid-cols-3  animate-slide-up border border-gray-200 rounded-2xl bg-white shadow-sm hover:shadow-md transition-all duration-300 gap-4 mb-3 p-4">
         {/* Cadastrar abastecimento */}
         <CardFuncionalidade
           className="bg-red-200 hover:bg-red-300 active:bg-red-200"

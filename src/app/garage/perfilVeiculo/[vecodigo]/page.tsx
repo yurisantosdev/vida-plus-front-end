@@ -665,9 +665,8 @@ export default function PerfilVeiculo({ params }: PageProps) {
         </div>
 
         {/* Funcionalidades */}
-        <div className="border border-gray-200 rounded-2xl p-4 bg-white shadow-sm hover:shadow-md transition-all duration-300 flex flex-col gap-4 mb-3">
-          <FuncionalidadesGarage />
-        </div>
+        <FuncionalidadesGarage />
+        
       </BaseLayout>
 
       {/* Modal de Confirmação de Exclusão */}
