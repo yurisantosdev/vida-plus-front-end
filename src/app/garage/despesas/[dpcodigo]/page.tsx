@@ -9,10 +9,10 @@ import Subtitle from '@/components/Subtitle'
 import {
   CalendarDots,
   Car,
+  CurrencyDollar,
   Gauge,
   Tag,
-  Trash,
-  Wrench
+  Trash
 } from '@phosphor-icons/react'
 import InputComponent from '@/components/Input'
 import { useForm } from 'react-hook-form'
@@ -20,64 +20,69 @@ import TextRequired from '@/components/TextRequired'
 import { Button } from '@/components/Button'
 import toast from 'react-hot-toast'
 import { setLoading } from '@/redux/loading/actions'
-import { ManutencoesType } from '@/types/ManutencoesType'
+import { DespesasType } from '@/types/DespesasType'
 import { VeiculosType } from '@/types/VeiculosType'
-import {
-  updateManutencao,
-  findManutencao,
-  deleteManutencao
-} from '@/store/Manutencoes'
+import { updateDespesa, findDespesa, deleteDespesa } from '@/store/Despesas'
 import { findVeiculo } from '@/store/Veiculos'
 import Modal from '@/components/Modal'
 import { CLickLabel } from '@/services/clickLabel'
-import CardVeiculo from '../../../_components/CardVeiculo'
+import CardVeiculo from '../../_components/CardVeiculo'
+import SelectComponent from '@/components/Select'
 
 interface PageProps {
-  params: Promise<{ mtcodigo: string }>
+  params: Promise<{ dpcodigo: string }>
 }
 
-export default function EditarManutencao({ params }: PageProps) {
+export default function EditarDespesa({ params }: PageProps) {
   AuthUser()
   const {
     handleSubmit,
     register,
     reset,
     formState: { errors }
-  } = useForm<ManutencoesType>({
+  } = useForm<DespesasType>({
     defaultValues: {
-      mtcodigo: '',
-      mtveiculo: '',
-      mttitle: '',
-      mtdescricao: '',
-      mtvalor: 0,
-      mtquando: '',
-      mtusuario: '',
-      mthodometro: 0
+      dpcodigo: '',
+      dpveiculo: '',
+      dpdescricao: '',
+      dpcategoria: '',
+      dpvalor: 0,
+      dpquando: '',
+      dphodometro: 0,
+      dpusuario: ''
     }
   })
   const router = useRouter()
   const dispatch = useDispatch()
   const user: UsuarioType = useSelector((state: any) => state.userReducer)
-  const [mtcodigo, setMtcodigo] = useState<string>('')
+  const [dpcodigo, setDpcodigo] = useState<string>('')
   const [veiculo, setVeiculo] = useState<VeiculosType | null>(null)
 
-  async function onSalvarManutencao(data: ManutencoesType) {
-    if (user.uscodigo && mtcodigo) {
+  const categoriasDespesas = [
+    { value: 'ESTACIONAMENTO', label: 'Estacionamento' },
+    { value: 'MULTA', label: 'Multa' },
+    { value: 'LAVAGEM', label: 'Lavagem' },
+    { value: 'SEGURO', label: 'Seguro' },
+    { value: 'OUTRO', label: 'Outro' }
+  ]
+
+  async function onSalvarDespesa(data: DespesasType) {
+    if (user.uscodigo && dpcodigo) {
       dispatch(setLoading(true))
 
-      data.mtcodigo = mtcodigo
-      data.mtusuario = user.uscodigo
-      data.mtvalor = parseFloat(data.mtvalor.toString())
-      data.mthodometro = parseFloat(data.mthodometro.toString())
+      data.dpcodigo = dpcodigo
+      data.dpusuario = user.uscodigo
+      data.dpvalor = parseFloat(data.dpvalor.toString())
+      data.dphodometro = parseFloat(data.dphodometro.toString())
 
-      if (data.mtquando) {
-        data.mtquando = new Date(data.mtquando).toISOString()
+      if (data.dpquando) {
+        data.dpquando = new Date(data.dpquando).toISOString()
       }
 
-      const response = await updateManutencao(data)
+      const response = await updateDespesa(data)
 
       if (response != undefined) {
-        toast.success('Manutenção atualizada com sucesso!')
+        toast.success('Despesa atualizada com sucesso!')
         router.back()
       }
 
@@ -85,52 +90,52 @@ export default function EditarManutencao({ params }: PageProps) {
     }
   }
 
-  async function carregarManutencao() {
-    if (mtcodigo) {
+  async function carregarDespesa() {
+    if (dpcodigo) {
       dispatch(setLoading(true))
-      const response = await findManutencao(mtcodigo)
+      const response = await findDespesa(dpcodigo)
 
       if (response != undefined) {
-        const manutencao = response.manutencao
+        const despesa = response.despesa
 
-        const dataFormatada = manutencao.mtquando
-          ? new Date(manutencao.mtquando).toISOString().split('T')[0]
+        const dataFormatada = despesa.dpquando
+          ? new Date(despesa.dpquando).toISOString().split('T')[0]
           : ''
 
         reset({
-          mtcodigo: manutencao.mtcodigo,
-          mtveiculo: manutencao.mtveiculo,
-          mttitle: manutencao.mttitle,
-          mtdescricao: manutencao.mtdescricao,
-          mtvalor: manutencao.mtvalor,
-          mtquando: dataFormatada,
-          mtusuario: manutencao.mtusuario,
-          mthodometro: manutencao.mthodometro
+          dpcodigo: despesa.dpcodigo || '',
+          dpveiculo: despesa.dpveiculo || '',
+          dpdescricao: despesa.dpdescricao || '',
+          dpcategoria: despesa.dpcategoria || '',
+          dpvalor: despesa.dpvalor || 0,
+          dpquando: dataFormatada,
+          dpusuario: despesa.dpusuario || '',
+          dphodometro: despesa.dphodometro || 0
         })
 
         // Carregar informações do veículo
-        if (manutencao.mtveiculo) {
-          const veiculoResponse = await findVeiculo(manutencao.mtveiculo)
-          if (veiculoResponse != undefined) {
+        if (despesa.dpveiculo) {
+          const veiculoResponse = await findVeiculo(despesa.dpveiculo)
+          if (veiculoResponse != undefined && veiculoResponse.veiculo) {
             setVeiculo(veiculoResponse.veiculo)
           }
         }
       } else {
-        toast.error('Erro ao carregar dados da manutenção')
+        toast.error('Erro ao carregar dados da despesa')
       }
 
       dispatch(setLoading(false))
     }
   }
 
-  async function onDeletarManutencao() {
-    if (mtcodigo) {
+  async function onDeletarDespesa() {
+    if (dpcodigo) {
       dispatch(setLoading(true))
-      const response = await deleteManutencao(mtcodigo)
+      const response = await deleteDespesa(dpcodigo)
 
       if (response != undefined) {
-        CLickLabel('modalDeletarManutencao')
-        toast.success('Manutenção excluída com sucesso!')
+        CLickLabel('modalDeletarDespesa')
+        toast.success('Despesa excluída com sucesso!')
         router.back()
       }
 
@@ -141,20 +146,20 @@ export default function EditarManutencao({ params }: PageProps) {
   useEffect(() => {
     const getParams = async () => {
       const resolvedParams = await params
-      setMtcodigo(resolvedParams.mtcodigo)
+      setDpcodigo(resolvedParams.dpcodigo)
     }
     getParams()
   }, [params])
 
   useEffect(() => {
-    if (mtcodigo) {
-      carregarManutencao()
+    if (dpcodigo) {
+      carregarDespesa()
     }
-  }, [mtcodigo])
+  }, [dpcodigo])
 
-  if (!mtcodigo) {
+  if (!dpcodigo) {
     return (
-      <BaseLayout title="Editar Manutenção" navbar={false} voltar>
+      <BaseLayout title="Editar Despesa" navbar={false} voltar>
         <div className="flex items-center justify-center h-64">
           <p className="text-gray-500">Carregando...</p>
         </div>
@@ -164,7 +169,7 @@ export default function EditarManutencao({ params }: PageProps) {
 
   return (
     <span>
-      <BaseLayout title="Editar Manutenção" navbar={false} voltar>
+      <BaseLayout title="Editar Despesa" navbar={false} voltar>
         {/* Informações do Veículo */}
         {veiculo && (
           <div className="transition-all animate-slide-up mb-5">
@@ -185,70 +190,70 @@ export default function EditarManutencao({ params }: PageProps) {
         {/* Formulário de Edição */}
         <div className="transition-all animate-slide-up">
           <Subtitle
-            title="Informações da Manutenção"
-            icon={<Wrench size={20} className="text-black" />}
+            title="Informações da Despesa"
+            icon={<CurrencyDollar size={20} className="text-black" />}
           />
-
-          {/* Título */}
-          <div className="mt-1">
-            <InputComponent
-              id="mttitle"
-              placeholder="Informe um título"
-              className="w-full bg-gray-50 text-gray-900 transition-all duration-300 focus:ring-2 focus:ring-orange-1000/50 mb-4"
-              icon={<Wrench size={22} className="text-gray-500" />}
-              textLabel="Título"
-              styleLabel="text-gray-700 font-medium"
-              requiredItem
-              {...register('mttitle', {
-                required: true
-              })}
-              textError={errors.mttitle && <TextRequired />}
-              error={errors.mttitle}
-            />
-          </div>
 
           {/* Descrição */}
           <div className="mt-1">
             <InputComponent
-              id="mtdescricao"
+              id="dpdescricao"
               placeholder="Informe uma descrição"
               className="w-full bg-gray-50 text-gray-900 transition-all duration-300 focus:ring-2 focus:ring-orange-1000/50 mb-4"
               icon={<Tag size={22} className="text-gray-500" />}
               textLabel="Descrição"
               styleLabel="text-gray-700 font-medium"
               requiredItem
-              {...register('mtdescricao', {
+              {...register('dpdescricao', {
                 required: true
               })}
-              textError={errors.mtdescricao && <TextRequired />}
-              error={errors.mtdescricao}
+              textError={errors.dpdescricao && <TextRequired />}
+              error={errors.dpdescricao}
+            />
+          </div>
+
+          {/* Categoria */}
+          <div className="mt-1">
+            <SelectComponent
+              id="dpcategoria"
+              className="w-full bg-gray-50 text-gray-900 transition-all duration-300 focus:ring-2 focus:ring-orange-1000/50 mb-4"
+              icon={<Tag size={22} className="text-gray-500" />}
+              textLabel="Categoria"
+              styleLabel="text-gray-700 font-medium"
+              requiredItem
+              options={categoriasDespesas}
+              {...register('dpcategoria', {
+                required: true
+              })}
+              textError={errors.dpcategoria && <TextRequired />}
+              error={errors.dpcategoria}
             />
           </div>
 
           {/* Valor */}
           <div className="mt-1">
             <InputComponent
-              id="mtvalor"
+              id="dpvalor"
               type="number"
               step="0.01"
               placeholder="Informe o valor"
               className="w-full bg-gray-50 text-gray-900 transition-all duration-300 focus:ring-2 focus:ring-orange-1000/50 mb-4"
-              icon={<Tag size={22} className="text-gray-500" />}
+              icon={<CurrencyDollar size={22} className="text-gray-500" />}
               textLabel="Valor"
               styleLabel="text-gray-700 font-medium"
               requiredItem
-              {...register('mtvalor', {
+              {...register('dpvalor', {
                 required: true
               })}
-              textError={errors.mtvalor && <TextRequired />}
-              error={errors.mtvalor}
+              textError={errors.dpvalor && <TextRequired />}
+              error={errors.dpvalor}
             />
           </div>
 
           {/* Hodômetro */}
           <div className="mt-1">
             <InputComponent
-              id="mthodometro"
+              id="dphodometro"
               type="number"
               placeholder="Informe o hodômetro"
               className="w-full bg-gray-50 text-gray-900 transition-all duration-300 focus:ring-2 focus:ring-orange-1000/50 mb-4"
@@ -256,18 +261,18 @@ export default function EditarManutencao({ params }: PageProps) {
               textLabel="Hodômetro"
               styleLabel="text-gray-700 font-medium"
               requiredItem
-              {...register('mthodometro', {
+              {...register('dphodometro', {
                 required: true
               })}
-              textError={errors.mthodometro && <TextRequired />}
-              error={errors.mthodometro}
+              textError={errors.dphodometro && <TextRequired />}
+              error={errors.dphodometro}
             />
           </div>
 
           {/* Data */}
           <div className="mt-1">
             <InputComponent
-              id="mtquando"
+              id="dpquando"
               type="date"
               placeholder="Informe a data"
               className="w-full bg-gray-50 text-gray-900 transition-all duration-300 focus:ring-2 focus:ring-orange-1000/50 mb-4"
@@ -275,11 +280,11 @@ export default function EditarManutencao({ params }: PageProps) {
               textLabel="Data"
               styleLabel="text-gray-700 font-medium"
               requiredItem
-              {...register('mtquando', {
+              {...register('dpquando', {
                 required: true
               })}
-              textError={errors.mtquando && <TextRequired />}
-              error={errors.mtquando}
+              textError={errors.dpquando && <TextRequired />}
+              error={errors.dpquando}
             />
           </div>
         </div>
@@ -291,12 +296,12 @@ export default function EditarManutencao({ params }: PageProps) {
             className="bg-red-600 hover:bg-red-500 active:bg-red-600 w-full"
             iconRight={<Trash size={20} />}
             onClick={() => {
-              CLickLabel('modalDeletarManutencao')
+              CLickLabel('modalDeletarDespesa')
             }}
           />
           <Button
             title="Salvar"
-            onClick={handleSubmit(onSalvarManutencao)}
+            onClick={handleSubmit(onSalvarDespesa)}
             className="bg-green-600 hover:bg-green-500 active:bg-green-600 w-full"
           />
         </div>
@@ -304,35 +309,35 @@ export default function EditarManutencao({ params }: PageProps) {
 
       {/* Modal de Confirmação de Exclusão */}
       <Modal
-        htmlFor="modalDeletarManutencao"
-        name="Excluir Manutenção"
+        htmlFor="modalDeletarDespesa"
+        name="Excluir Despesa"
         loading={false}
         functioReset={() => {
-          CLickLabel('modalDeletarManutencao')
+          CLickLabel('modalDeletarDespesa')
         }}
         descricao="">
         <div className="flex flex-col gap-4">
           <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
             <div className="flex items-start gap-3">
               <div className="flex-shrink-0">
-                <Wrench size={24} className="text-red-600" />
+                <CurrencyDollar size={24} className="text-red-600" />
               </div>
               <div>
                 <h4 className="text-red-800 font-semibold mb-2">
                   Atenção: Exclusão Permanente
                 </h4>
                 <p className="text-red-700 text-sm leading-relaxed">
-                  Ao excluir esta manutenção,{' '}
+                  Ao excluir esta despesa,{' '}
                   <strong>
                     todos os dados relacionados serão permanentemente removidos
                   </strong>
                   , incluindo:
                 </p>
                 <ul className="text-red-700 text-sm mt-2 space-y-1 list-disc list-inside">
-                  <li>Título da manutenção</li>
-                  <li>Descrição detalhada</li>
+                  <li>Descrição da despesa</li>
+                  <li>Categoria</li>
                   <li>Valor gasto</li>
-                  <li>Data da manutenção</li>
+                  <li>Data da despesa</li>
                   <li>Hodômetro registrado</li>
                 </ul>
                 <p className="text-red-700 text-sm mt-3 font-medium">
@@ -347,13 +352,13 @@ export default function EditarManutencao({ params }: PageProps) {
               title="Cancelar"
               className="bg-gray-600 hover:bg-gray-500 active:bg-gray-600 w-full"
               onClick={() => {
-                CLickLabel('modalDeletarManutencao')
+                CLickLabel('modalDeletarDespesa')
               }}
             />
             <Button
               title="Sim"
               className="bg-red-600 hover:bg-red-500 active:bg-red-600 w-full"
-              onClick={onDeletarManutencao}
+              onClick={onDeletarDespesa}
             />
           </div>
         </div>

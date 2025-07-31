@@ -28,6 +28,7 @@ import {
 } from '@/store/Abastecimentos'
 import { VeiculosType } from '@/types/VeiculosType'
 import { findVeiculo as findVeiculoById } from '@/store/Veiculos'
+import CardVeiculo from '../../_components/CardVeiculo'
 
 interface PageProps {
   params: Promise<{ abcodigo: string }>
@@ -176,25 +177,13 @@ export default function EditarAbastecimento({ params }: PageProps) {
           icon={<GasPump size={20} className="text-black" />}
         />
 
-        <div className="border rounded-2xl p-4 shadow-sm border-gray-200 bg-white mb-5">
-          <div className="flex items-center gap-4">
-            <div className="p-3 rounded-full w-16 h-16 flex justify-center items-center shadow-inner bg-blue-100">
-              <GasPump size={28} className="text-blue-600" />
-            </div>
-
-            <div className="flex flex-col flex-1">
-              <div className="flex items-center gap-2 text-lg font-semibold text-gray-800">
-                <span>{veiculo.venome}</span>
-                <span className="text-gray-400">-</span>
-                <span>{veiculo.veplaca}</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
-                <Gauge size={16} className="text-blue-500" />
-                <span className="font-medium">{veiculo.vehodometro} Km</span>
-              </div>
-            </div>
-          </div>
-        </div>
+        <CardVeiculo
+          veiculo={veiculo.venome}
+          placa={veiculo.veplaca}
+          hodometro={veiculo.vehodometro}
+          select={true}
+          acess={false}
+        />
       </div>
 
       {/* Formulário de Edição */}
