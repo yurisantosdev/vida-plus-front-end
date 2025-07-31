@@ -54,3 +54,16 @@ export const findVeiculo = async (vecodigo: string) => {
       )
     })
 }
+
+export const deleteVeiculo = async (vecodigo: string) => {
+  return await api
+    .delete(`/veiculos/delete/${vecodigo}`)
+    .then((response) => {
+      return response.data
+    })
+    .catch((error) => {
+      toast.error(
+        'Não foi possível realizar a exclusão do veículo, por favor tente novamente!'
+      )
+    })
+}

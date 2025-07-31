@@ -136,6 +136,9 @@ export default function Garage() {
                   placa={veiculo.veplaca}
                   veiculo={veiculo.venome}
                   hodometro={veiculo.vehodometro}
+                  onClick={() => {
+                    router.push(`/garage/perfilVeiculo/${veiculo.vecodigo}`)
+                  }}
                 />
               )
             })

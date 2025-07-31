@@ -31,7 +31,6 @@ export default function Cadastro() {
       vehodometro: 0
     }
   })
-  AuthUser()
   const router = useRouter()
   const dispatch = useDispatch()
   const user: UsuarioType = useSelector((state: any) => state.userReducer)
