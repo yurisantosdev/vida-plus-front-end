@@ -46,7 +46,7 @@ export default function Garage() {
         <div className="bg-white border border-gray-300 rounded-lg p-2 shadow-lg">
           <p className="text-sm text-gray-600">{label}</p>
           <p className="text-lg font-semibold text-black">
-            R$ {payload[0].value.toFixed(2)}
+            {FormatarValorEmReais(payload[0].value.toFixed(2))}
           </p>
         </div>
       )
