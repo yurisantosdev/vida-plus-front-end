@@ -83,7 +83,7 @@ export default function InputFotos({
         {value.map((foto, index) => (
           <div
             key={index}
-            className="flex items-center justify-between bg-white p-1 rounded-md border border-gray-300 px-3">
+            className="flex items-center justify-between bg-white p-1 rounded-2xl border border-gray-300 px-3">
             <div className="flex items-center gap-2">
               <img
                 src={`data:image/jpeg;base64,${foto}`}

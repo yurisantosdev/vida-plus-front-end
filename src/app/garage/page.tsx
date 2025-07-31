@@ -11,13 +11,10 @@ import {
   ListBullets,
   Wrench,
   CurrencyCircleDollar,
-  GearSix,
   Plus,
-  Warning,
   Info
 } from '@phosphor-icons/react'
 import CardVeiculo from './_components/CardVeiculo'
-import CardFuncionalidade from './_components/CardFuncionalidade'
 import { Button } from '@/components/Button'
 import { VeiculosType } from '@/types/VeiculosType'
 import { findAllVeiculos } from '@/store/Veiculos'
@@ -27,6 +24,7 @@ import { FormatarValorEmReais } from '@/services/formatters'
 import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer } from 'recharts'
 import { findTotalGastoManutencoes } from '@/store/Manutencoes'
 import { findTotalGastoDespesas } from '@/store/Despesas'
+import FuncionalidadesGarage from './_components/FuncionalidadesGarage'
 
 export default function Garage() {
   AuthUser()
@@ -157,40 +155,8 @@ export default function Garage() {
       </div>
 
       {/* Funcionalidades */}
-      <div className="mt-5 transition-all animate-slide-up">
-        <Subtitle
-          title="Funcionalidades"
-          icon={<GearSix size={20} className="text-black" />}
-        />
-
-        <div className="grid grid-cols-3 gap-3 transition-all animate-slide-up">
-          {/* Cadastrar abastecimento */}
-          <CardFuncionalidade
-            className="bg-red-200 hover:bg-red-300 active:bg-red-200"
-            onClick={() => {
-              router.push('/garage/abastecimentos')
-            }}
-            icon={<GasPump size={40} className="text-red-600" />}
-          />
-
-          {/* Cadastrar manutenções */}
-          <CardFuncionalidade
-            className="bg-blue-200 hover:bg-blue-300 active:bg-blue-200"
-            onClick={() => {
-              router.push('/garage/manutencoes')
-            }}
-            icon={<Wrench size={40} className="text-blue-600" />}
-          />
-
-          {/* Cadastrar despesas */}
-          <CardFuncionalidade
-            className="bg-green-200 hover:bg-green-300 active:bg-green-200"
-            onClick={() => {
-              router.push('/garage/despesas')
-            }}
-            icon={<CurrencyCircleDollar size={40} className="text-green-600" />}
-          />
-        </div>
+      <div className="border border-gray-200 rounded-2xl bg-white shadow-sm hover:shadow-md transition-all duration-300 flex flex-col gap-4 mb-3 p-4">
+        <FuncionalidadesGarage />
       </div>
 
       {/* Gastos */}

@@ -80,3 +80,16 @@ export const findTotalGastoManutencoes = async (uscodigo: string) => {
       )
     })
 }
+
+export const deleteManutencao = async (mtcodigo: string) => {
+  return await api
+    .delete(`/manutencoes/delete/${mtcodigo}`)
+    .then((response) => {
+      return response.data
+    })
+    .catch((error) => {
+      toast.error(
+        'Não foi possível excluir a manutenção, por favor tente novamente!'
+      )
+    })
+}

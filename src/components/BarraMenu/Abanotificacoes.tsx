@@ -85,7 +85,7 @@ export default function AbaNotificacoes() {
           {/* Lista de notificações */}
           <div className="flex-1 overflow-y-auto px-4 py-4 custom-scrollbar bg-gray-50 dark:bg-gray-1100">
             <div className="mb-4" onClick={onGetNotificacoes}>
-              <div className="text-center bg-zinc-800 rounded-md p-2 hover:bg-zinc-700 active:bg-zinc-900 duration-300 cursor-pointer flex justify-center items-center gap-2">
+              <div className="text-center bg-zinc-800 rounded-2xl p-2 hover:bg-zinc-700 active:bg-zinc-900 duration-300 cursor-pointer flex justify-center items-center gap-2">
                 <ArrowClockwise size={20} />
                 <p className="text-white">Atualizar</p>
               </div>

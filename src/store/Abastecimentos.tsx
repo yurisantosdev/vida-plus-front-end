@@ -80,3 +80,16 @@ export const findTotalGastoAbastecimentos = async (uscodigo: string) => {
       )
     })
 }
+
+export const deleteAbastecimento = async (abcodigo: string) => {
+  return await api
+    .delete(`/abastecimentos/delete/${abcodigo}`)
+    .then((response) => {
+      return response.data
+    })
+    .catch((error) => {
+      toast.error(
+        'Não foi possível excluir o abastecimento, por favor tente novamente!'
+      )
+    })
+}

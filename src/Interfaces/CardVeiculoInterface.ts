@@ -1,4 +1,4 @@
-import { ComponentProps } from "react";
+import { ComponentProps, ReactNode } from "react";
 
 export interface CardVeiculoInterface extends ComponentProps<'div'> {
   placa: string;
@@ -6,4 +6,5 @@ export interface CardVeiculoInterface extends ComponentProps<'div'> {
   hodometro: number;
   select?: boolean;
   acess?: boolean;
+  extraContent?: ReactNode;
 }

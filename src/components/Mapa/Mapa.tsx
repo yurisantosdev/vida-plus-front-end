@@ -150,7 +150,7 @@ export default function Mapa({
 
   if (!mounted) {
     return (
-      <div className={`${className} bg-gray-200 animate-pulse rounded-md`} />
+      <div className={`${className} bg-gray-200 animate-pulse rounded-2xl`} />
     )
   }
 

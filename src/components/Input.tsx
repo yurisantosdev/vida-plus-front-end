@@ -57,7 +57,7 @@ export default function Input({
                     error
                       ? 'bg-red-400 border border-red-600 text-red-600 hover:bg-red-300'
                       : 'border border-gray-300 text-gray-700 hover:bg-gray-100'
-                  } rounded-md w-full h-12 px-5 text-left cursor-pointer flex justify-between items-center mb-6`}>
+                  } rounded-2xl w-full h-12 px-5 text-left cursor-pointer flex justify-between items-center mb-6`}>
                   <p className="w-[80%] truncate">{fraseInputFile}</p>
                 </button>
 
@@ -77,7 +77,7 @@ export default function Input({
                 error
                   ? 'bg-red-400 border border-red-600 placeholder:text-red-600 focus:outline-red-500'
                   : 'border border-gray-300 placeholder:text-gray-300 focus:bg-gray-100 focus:outline-blue-1000'
-              }  rounded-md w-full h-12 text-black focus:border-none ${
+              }  rounded-2xl w-full h-12 text-black focus:border-none ${
                 props.className ?? ''
               }`}
             />

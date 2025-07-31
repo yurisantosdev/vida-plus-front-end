@@ -7,6 +7,7 @@ export type ManutencoesType = {
   mtquando: string;
   mtvalor: any;
   mtdescricao: string;
+  mthodometro: any;
   mttitle: string;
   mtusuario: string;
   createdAt?: string;

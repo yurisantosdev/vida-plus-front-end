@@ -40,7 +40,7 @@ export default function Textarea({
               error
                 ? 'bg-red-400 border border-red-600 placeholder:text-red-600 focus:outline-red-500'
                 : 'bg-white border border-gray-300 placeholder:text-gray-300 focus:bg-gray-100 focus:outline-blue-1000'
-            }  rounded-md w-full text-black focus:border-none ${
+            }  rounded-2xl w-full text-black focus:border-none ${
               props.className ?? ''
             }`}
           />

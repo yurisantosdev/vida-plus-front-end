@@ -45,11 +45,11 @@ export default function Navbar() {
   }
 
   return (
-    <Disclosure as="nav" className="bg-black rounded-md">
+    <Disclosure as="nav" className="bg-black rounded-2xl">
       <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
         <div className="relative flex h-16 items-center justify-between">
           <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
-            <DisclosureButton className="cursor-pointer group relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:ring-2 focus:ring-white focus:outline-hidden focus:ring-inset">
+            <DisclosureButton className="cursor-pointer group relative inline-flex items-center justify-center rounded-2xl p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:ring-2 focus:ring-white focus:outline-hidden focus:ring-inset">
               <span className="absolute -inset-0.5" />
               <List size={30} className="block size-6 group-data-open:hidden" />
               <X size={30} className="hidden size-6 group-data-open:block" />
@@ -75,7 +75,7 @@ export default function Navbar() {
                         isActive
                           ? 'bg-gray-700 text-white'
                           : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-                        'rounded-md px-3 py-2 text-sm font-medium cursor-pointer select-none'
+                        'rounded-2xl px-3 py-2 text-sm font-medium cursor-pointer select-none'
                       )}>
                       <div className="flex justify-start items-center gap-3">
                         {item.icon}
@@ -111,7 +111,7 @@ export default function Navbar() {
 
               <MenuItems
                 transition
-                className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black/5 transition focus:outline-hidden data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in">
+                className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-2xl bg-white py-1 shadow-lg ring-1 ring-black/5 transition focus:outline-hidden data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in">
                 <MenuItem>
                   <a
                     href="#"
@@ -148,7 +148,7 @@ export default function Navbar() {
                   isActive
                     ? 'bg-gray-700 text-white'
                     : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-                  'block rounded-md px-3 py-2 text-base font-medium select-none'
+                  'block rounded-2xl px-3 py-2 text-base font-medium select-none'
                 )}>
                 <div className="flex justify-start items-center gap-3">
                   {item.icon}

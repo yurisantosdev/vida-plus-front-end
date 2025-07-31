@@ -29,8 +29,7 @@ export default function Select({
           <span
             className={`absolute top-[12px] text-center left-0 pl-3 flex items-center ${
               error ? 'text-red-600' : 'text-gray-400'
-            }`}
-          >
+            }`}>
             {icon}
           </span>
         )}
@@ -42,12 +41,11 @@ export default function Select({
               error
                 ? 'bg-red-400 border border-red-600 placeholder:text-red-600 focus:outline-red-500'
                 : 'bg-white border border-gray-300 placeholder:text-gray-300 focus:bg-gray-100 focus:outline-blue-1000'
-            } rounded-md w-full h-12 text-black focus:border-none appearance-none ${
+            } rounded-2xl w-full h-12 text-black focus:border-none appearance-none ${
               props.className ?? ''
-            }`}
-          >
+            }`}>
             <option value="">Selecione uma opção</option>
-            {options.map(option => (
+            {options.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
               </option>
@@ -61,8 +59,7 @@ export default function Select({
                 error
                   ? 'text-red-600 hover:bg-red-300'
                   : 'text-gray-400 hover:bg-gray-100'
-              }`}
-            >
+              }`}>
               {buttonRight}
             </div>
           )}
@@ -73,8 +70,7 @@ export default function Select({
         {iconRight && (
           <span
             onClick={iconRightFuntion}
-            className="absolute top-1 text-center right-2 flex items-center text-gray-400 cursor-pointer hover:bg-gray-100 p-2 rounded-full active:scale-90 duration-300"
-          >
+            className="absolute top-1 text-center right-2 flex items-center text-gray-400 cursor-pointer hover:bg-gray-100 p-2 rounded-full active:scale-90 duration-300">
             {iconRight}
           </span>
         )}

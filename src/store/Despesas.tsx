@@ -80,3 +80,16 @@ export const findTotalGastoDespesas = async (uscodigo: string) => {
       )
     })
 }
+
+export const deleteDespesa = async (dpcodigo: string) => {
+  return await api
+    .delete(`/despesas/delete/${dpcodigo}`)
+    .then((response) => {
+      return response.data
+    })
+    .catch((error) => {
+      toast.error(
+        'Não foi possível excluir a despesa, por favor tente novamente!'
+      )
+    })
+}

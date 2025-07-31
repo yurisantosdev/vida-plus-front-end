@@ -8,17 +8,18 @@ export default function CardVeiculo({
   hodometro,
   select = false,
   acess = true,
+  extraContent,
   ...props
 }: CardVeiculoInterface) {
   return (
     <div
       {...props}
-      className={`border rounded-2xl p-4 shadow-sm hover:shadow-md hover:bg-gray-50 active:bg-gray-100 active:scale-95 cursor-pointer transition-all duration-300 flex justify-between items-center mb-3 ${
+      className={`border rounded-2xl p-4 shadow-sm hover:shadow-md hover:bg-gray-50 active:bg-gray-100 active:scale-95 cursor-pointer transition-all duration-300 items-center mb-3 ${
         props.className
       } ${
         select ? 'bg-blue-100 border-blue-400' : 'border-gray-200 bg-white '
       }`}>
-      <div className="flex flex-col gap-3">
+      <div className="flex justify-between items-center">
         <div className="flex items-center gap-4">
           <div
             className={`p-3 rounded-full w-16 h-16 flex justify-center items-center shadow-inner ${
@@ -28,7 +29,7 @@ export default function CardVeiculo({
           </div>
 
           <div className="flex flex-col">
-            <div className="flex items-center gap-2 text-lg font-semibold text-gray-800">
+            <div className="flex items-center gap-2 text-lg text-truncate font-semibold text-gray-800">
               <span>{veiculo}</span>
               <span className="text-gray-400">-</span>
               <span>{placa}</span>
@@ -39,9 +40,10 @@ export default function CardVeiculo({
             </div>
           </div>
         </div>
+        {acess && <CaretRight size={20} className="text-gray-400" />}
       </div>
 
-      {acess && <CaretRight size={20} className="text-gray-400" />}
+      {extraContent && <div className="mt-4 w-full">{extraContent}</div>}
     </div>
   )
 }

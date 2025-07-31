@@ -8,7 +8,7 @@ export default function CardFuncionalidade({
   return (
     <div
       {...props}
-      className={`p-2 w-full rounded-md border border-gray-200 active:scale-95 duration-300 transition-all flex justify-center items-center cursor-pointer ${props.className}`}>
+      className={`p-2 w-full rounded-2xl border border-gray-200 active:scale-95 duration-300 transition-all flex justify-center items-center cursor-pointer ${props.className}`}>
       {icon}
     </div>
   )

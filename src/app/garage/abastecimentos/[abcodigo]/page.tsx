@@ -10,12 +10,9 @@ import {
   CalendarDots,
   GasPump,
   Gauge,
-  Info,
-  ListBullets,
-  Plus,
-  Tag
+  Tag,
+  PencilSimple
 } from '@phosphor-icons/react'
-import CardVeiculo from '../_components/CardVeiculo'
 import InputComponent from '@/components/Input'
 import { useForm } from 'react-hook-form'
 import { AbastecimentosType } from '@/types/AbastecimentosType'
@@ -24,11 +21,19 @@ import { Button } from '@/components/Button'
 import toast from 'react-hot-toast'
 import { setLoading } from '@/redux/loading/actions'
 import { FormatarValorEmReais } from '@/services/formatters'
-import { findAllVeiculos } from '@/store/Veiculos'
+import {
+  findVeiculo,
+  updateAbastecimento,
+  deleteAbastecimento
+} from '@/store/Abastecimentos'
 import { VeiculosType } from '@/types/VeiculosType'
-import { createAbastecimento } from '@/store/Abastecimentos'
+import { findVeiculo as findVeiculoById } from '@/store/Veiculos'
 
-export default function Abastecimentos() {
+interface PageProps {
+  params: Promise<{ abcodigo: string }>
+}
+
+export default function EditarAbastecimento({ params }: PageProps) {
   AuthUser()
   const {
     handleSubmit,
@@ -49,33 +54,74 @@ export default function Abastecimentos() {
   })
   const router = useRouter()
   const dispatch = useDispatch()
-  const [veiculoSelecionado, setVeiculoSelecionado] = useState<string>('')
   const [valorTotal, setValorTotal] = useState<number>(0)
+  const [isEditing, setIsEditing] = useState(false)
+  const [abcodigo, setAbcodigo] = useState<string>('')
+  const [veiculo, setVeiculo] = useState<VeiculosType | null>(null)
   const user: UsuarioType = useSelector((state: any) => state.userReducer)
-  const [veiculos, setVeiculos] = useState<VeiculosType[]>([])
 
   async function onSalvarAbastecimento(data: AbastecimentosType) {
-    if (user.uscodigo) {
+    if (user.uscodigo && abcodigo) {
       dispatch(setLoading(true))
 
-      if (veiculoSelecionado.length <= 0) {
-        toast('Selecione um veículo!')
-        dispatch(setLoading(false))
-        return
-      }
-
-      data.abveiculo = veiculoSelecionado
+      data.abcodigo = abcodigo
       data.abusuario = user.uscodigo
       data.abvalortotal = parseFloat(valorTotal.toFixed(2))
       data.abhodometro = parseInt(data.abhodometro, 10)
       data.abvalorlitro = parseFloat(data.abvalorlitro)
       data.ablitros = parseFloat(data.ablitros)
 
-      const response = await createAbastecimento(data)
+      const response = await updateAbastecimento(data)
 
       if (response != undefined) {
-        toast.success('Abastecimento registrado com sucesso!')
         reset()
+        router.back()
+        toast.success('Abastecimento atualizado com sucesso!')
+        setIsEditing(false)
+        await carregarAbastecimento()
+      }
+
+      dispatch(setLoading(false))
+    }
+  }
+
+  async function carregarAbastecimento() {
+    if (abcodigo) {
+      dispatch(setLoading(true))
+      const response = await findVeiculo(abcodigo)
+
+      if (response != undefined && response.abastecimento) {
+        const abastecimento = response.abastecimento
+        reset({
+          abvalortotal: abastecimento.abvalortotal,
+          ablitros: abastecimento.ablitros,
+          abvalorlitro: abastecimento.abvalorlitro,
+          abveiculo: abastecimento.abveiculo,
+          abhodometro: abastecimento.abhodometro,
+          abquando: abastecimento.abquando,
+          abusuario: abastecimento.abusuario
+        })
+        setValorTotal(abastecimento.abvalortotal)
+
+        if (abastecimento.abveiculo) {
+          const veiculoResponse = await findVeiculoById(abastecimento.abveiculo)
+          if (veiculoResponse != undefined) {
+            setVeiculo(veiculoResponse.veiculo)
+          }
+        }
+      }
+
+      dispatch(setLoading(false))
+    }
+  }
+
+  async function onDeletarAbastecimento() {
+    if (abcodigo) {
+      dispatch(setLoading(true))
+      const response = await deleteAbastecimento(abcodigo)
+
+      if (response != undefined) {
+        toast.success('Abastecimento excluído com sucesso!')
         router.back()
       }
 
@@ -84,90 +130,78 @@ export default function Abastecimentos() {
   }
 
   useEffect(() => {
-    const consultaDados = async () => {
-      if (user.uscodigo) {
-        dispatch(setLoading(true))
-        const response = await findAllVeiculos(user.uscodigo)
-
-        if (response != undefined) {
-          setVeiculos(response.veiculos)
-        }
-
-        dispatch(setLoading(false))
-      }
+    const getParams = async () => {
+      const resolvedParams = await params
+      setAbcodigo(resolvedParams.abcodigo)
     }
+    getParams()
+  }, [params])
 
-    consultaDados()
-  }, [])
+  useEffect(() => {
+    if (abcodigo) {
+      carregarAbastecimento()
+    }
+  }, [abcodigo])
 
   useEffect(() => {
     setValorTotal(watch('ablitros') * watch('abvalorlitro'))
   }, [watch('abvalorlitro'), watch('ablitros')])
 
+  if (!abcodigo) {
+    return (
+      <BaseLayout title="Editar Abastecimento" navbar={false} voltar>
+        <div className="flex items-center justify-center h-64">
+          <p className="text-gray-500">Carregando...</p>
+        </div>
+      </BaseLayout>
+    )
+  }
+
+  if (!veiculo) {
+    return (
+      <BaseLayout title="Editar Abastecimento" navbar={false} voltar>
+        <div className="flex items-center justify-center h-64">
+          <p className="text-gray-500">Carregando...</p>
+        </div>
+      </BaseLayout>
+    )
+  }
+
   return (
-    <BaseLayout title="Abastecimentos" navbar={false} voltar>
-      <div className="max-h-[250px] overflow-x-scroll transition-all animate-slide-up">
+    <BaseLayout title="Editar Abastecimento" navbar={false} voltar>
+      {/* Informações do Veículo */}
+      <div className="transition-all animate-slide-up">
         <Subtitle
-          title="Selecione um Veículo"
-          icon={<ListBullets size={20} className="text-black" />}
+          title="Veículo"
+          icon={<GasPump size={20} className="text-black" />}
         />
 
-        <div className="max-h-[250px] overflow-x-scroll mt-5">
-          {veiculos.length > 0 ? (
-            veiculos.map((veiculo: VeiculosType, index: number) => {
-              const isSelect = veiculoSelecionado == veiculo.vecodigo
+        <div className="border rounded-2xl p-4 shadow-sm border-gray-200 bg-white mb-5">
+          <div className="flex items-center gap-4">
+            <div className="p-3 rounded-full w-16 h-16 flex justify-center items-center shadow-inner bg-blue-100">
+              <GasPump size={28} className="text-blue-600" />
+            </div>
 
-              return (
-                <CardVeiculo
-                  key={index}
-                  placa={veiculo.veplaca}
-                  veiculo={veiculo.venome}
-                  hodometro={veiculo.vehodometro}
-                  acess={false}
-                  select={isSelect}
-                  onClick={() => {
-                    if (veiculo.vecodigo) {
-                      if (veiculoSelecionado == veiculo.vecodigo) {
-                        setVeiculoSelecionado('')
-                      } else {
-                        setVeiculoSelecionado(veiculo.vecodigo)
-                      }
-                    }
-                  }}
-                />
-              )
-            })
-          ) : (
-            <div>
-              <div className="flex items-center justify-center mb-4">
-                <Button
-                  title="Cadastrar novo veículo"
-                  className="bg-black"
-                  iconRight={<Plus size={20} />}
-                  onClick={() => {
-                    router.push('/garage/cadastro')
-                  }}
-                />
+            <div className="flex flex-col flex-1">
+              <div className="flex items-center gap-2 text-lg font-semibold text-gray-800">
+                <span>{veiculo.venome}</span>
+                <span className="text-gray-400">-</span>
+                <span>{veiculo.veplaca}</span>
               </div>
-
-              <div className="border rounded-2xl p-4 shadow-sm border-gray-200 bg-white">
-                <Info
-                  size={40}
-                  className="text-black text-center w-full m-auto"
-                />
-                <p className="text-center text-black">
-                  Nenhum veículo cadastrado
-                </p>
+              <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
+                <Gauge size={16} className="text-blue-500" />
+                <span className="font-medium">{veiculo.vehodometro} Km</span>
               </div>
             </div>
-          )}
+          </div>
         </div>
       </div>
 
-      <div className="mt-5 transition-all animate-slide-up">
+      {/* Formulário de Edição */}
+      <div className="transition-all animate-slide-up">
         <Subtitle
-          title="Informações do Abastecimento"
-          icon={<GasPump size={20} className="text-black" />}
+          title="Editar Abastecimento"
+          icon={<PencilSimple size={20} className="text-black" />}
         />
 
         {/* Valor total */}
@@ -235,7 +269,7 @@ export default function Abastecimentos() {
           />
         </div>
 
-        {/* Quando */}
+        {/* Data */}
         <div className="mt-1">
           <InputComponent
             id="abquando"
@@ -253,22 +287,22 @@ export default function Abastecimentos() {
             error={errors.abquando}
           />
         </div>
-      </div>
 
-      <div className="mt-5 transition-all animate-slide-up flex justify-center items-center gap-2">
-        <Button
-          title="Cancelar"
-          className="bg-red-600 hover:bg-red-500 active:bg-red-600 w-full"
-          onClick={() => {
-            reset()
-            router.back()
-          }}
-        />
-        <Button
-          title="Salvar"
-          onClick={handleSubmit(onSalvarAbastecimento)}
-          className="bg-green-600 hover:bg-green-500 active:bg-green-600 w-full"
-        />
+        {/* Botões */}
+        <div className="mt-5 flex justify-center items-center gap-2">
+          <Button
+            title="Cancelar"
+            className="bg-red-600 hover:bg-red-500 active:bg-red-600 w-full"
+            onClick={() => {
+              router.back()
+            }}
+          />
+          <Button
+            title="Atualizar"
+            onClick={handleSubmit(onSalvarAbastecimento)}
+            className="bg-green-600 hover:bg-green-500 active:bg-green-600 w-full"
+          />
+        </div>
       </div>
     </BaseLayout>
   )

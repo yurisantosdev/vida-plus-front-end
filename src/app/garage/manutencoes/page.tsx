@@ -41,7 +41,8 @@ export default function Manutencoes() {
       mtdescricao: '',
       mtvalor: 0,
       mtquando: '',
-      mtusuario: ''
+      mtusuario: '',
+      mthodometro: 0
     }
   })
   const router = useRouter()
@@ -63,6 +64,7 @@ export default function Manutencoes() {
       data.mtveiculo = veiculoSelecionado
       data.mtusuario = user.uscodigo
       data.mtvalor = parseFloat(data.mtvalor)
+      data.mthodometro = parseFloat(data.mthodometro)
 
       const response = await createManutencao(data)
 
@@ -211,6 +213,25 @@ export default function Manutencoes() {
             })}
             textError={errors.mtvalor && <TextRequired />}
             error={errors.mtvalor}
+          />
+        </div>
+
+        {/* HODÔMETRO */}
+        <div className="mt-1">
+          <InputComponent
+            id="mthodometro"
+            type="number"
+            placeholder="Informe o hodômetro"
+            className="w-full bg-gray-50 text-gray-900 transition-all duration-300 focus:ring-2 focus:ring-orange-1000/50 mb-4"
+            icon={<Gauge size={22} className="text-gray-500" />}
+            textLabel="Hodômetro"
+            styleLabel="text-gray-700 font-medium"
+            requiredItem
+            {...register('mthodometro', {
+              required: true
+            })}
+            textError={errors.mthodometro && <TextRequired />}
+            error={errors.mthodometro}
           />
         </div>
 
