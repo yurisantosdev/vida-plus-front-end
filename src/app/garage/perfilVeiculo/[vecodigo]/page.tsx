@@ -665,8 +665,9 @@ export default function PerfilVeiculo({ params }: PageProps) {
         </div>
 
         {/* Funcionalidades */}
-        <FuncionalidadesGarage />
-        
+        <div className="mt-5">
+          <FuncionalidadesGarage />
+        </div>
       </BaseLayout>
 
       {/* Modal de Confirmação de Exclusão */}
