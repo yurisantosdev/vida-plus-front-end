@@ -207,21 +207,29 @@ export default function Garage() {
           </div>
 
           {/* Gráfico de barras */}
-          <div className="w-full h-32">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={valoresAbastecimento}>
-                <XAxis
-                  dataKey="name"
-                  axisLine={false}
-                  tickLine={false}
-                  interval="preserveStartEnd"
-                  angle={-90}
-                  textAnchor="end"
-                />
-                <Tooltip content={<CustomTooltip />} />
-                <Bar dataKey="value" fill="#ef4444" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+          <div className="w-full">
+            <div style={{ overflowX: 'auto' }}>
+              <div
+                style={{
+                  minWidth: `${12 * 60}px`,
+                  height: '200px'
+                }}>
+                <ResponsiveContainer>
+                  <BarChart data={valoresAbastecimento}>
+                    <XAxis
+                      dataKey="name"
+                      axisLine={true}
+                      tickLine={true}
+                      interval="preserveStartEnd"
+                      angle={-90}
+                      textAnchor="end"
+                    />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Bar dataKey="value" fill="#ef4444" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -245,22 +253,30 @@ export default function Garage() {
             </div>
           </div>
 
-          {/* Gráfico de barras */}
-          <div className="w-full h-32">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={valoresManutencoes}>
-                <XAxis
-                  dataKey="name"
-                  axisLine={false}
-                  tickLine={false}
-                  interval="preserveStartEnd"
-                  angle={-90}
-                  textAnchor="end"
-                />
-                <Tooltip content={<CustomTooltip />} />
-                <Bar dataKey="value" fill="#155dfc" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+          {/* Gráfico de Manutenções */}
+          <div className="w-full">
+            <div style={{ overflowX: 'auto' }}>
+              <div
+                style={{
+                  minWidth: `${12 * 60}px`,
+                  height: '200px'
+                }}>
+                <ResponsiveContainer>
+                  <BarChart data={valoresManutencoes}>
+                    <XAxis
+                      dataKey="name"
+                      axisLine={true}
+                      tickLine={true}
+                      interval="preserveStartEnd"
+                      angle={-90}
+                      textAnchor="end"
+                    />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Bar dataKey="value" fill="#155dfc" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -283,21 +299,29 @@ export default function Garage() {
           </div>
 
           {/* Gráfico de barras */}
-          <div className="w-full h-32">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={valoresAbastecimento}>
-                <XAxis
-                  dataKey="name"
-                  axisLine={false}
-                  tickLine={false}
-                  interval="preserveStartEnd"
-                  angle={-90}
-                  textAnchor="end"
-                />
-                <Tooltip content={<CustomTooltip />} />
-                <Bar dataKey="value" fill="#16a34a" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+          <div className="w-full">
+            <div style={{ overflowX: 'auto' }}>
+              <div
+                style={{
+                  minWidth: `${12 * 60}px`,
+                  height: '200px'
+                }}>
+                <ResponsiveContainer>
+                  <BarChart data={valoresAbastecimento}>
+                    <XAxis
+                      dataKey="name"
+                      axisLine={true}
+                      tickLine={true}
+                      interval="preserveStartEnd"
+                      angle={-90}
+                      textAnchor="end"
+                    />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Bar dataKey="value" fill="#16a34a" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
           </div>
         </div>
       </div>
