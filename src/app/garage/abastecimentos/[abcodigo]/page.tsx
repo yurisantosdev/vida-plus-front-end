@@ -11,7 +11,9 @@ import {
   GasPump,
   Gauge,
   Tag,
-  PencilSimple
+  PencilSimple,
+  Info,
+  Plus
 } from '@phosphor-icons/react'
 import InputComponent from '@/components/Input'
 import { useForm } from 'react-hook-form'
@@ -24,10 +26,13 @@ import { FormatarValorEmReais } from '@/services/formatters'
 import {
   findVeiculo,
   updateAbastecimento,
-  deleteAbastecimento
+  createAbastecimento
 } from '@/store/Abastecimentos'
 import { VeiculosType } from '@/types/VeiculosType'
-import { findVeiculo as findVeiculoById } from '@/store/Veiculos'
+import {
+  findAllVeiculos,
+  findVeiculo as findVeiculoById
+} from '@/store/Veiculos'
 import CardVeiculo from '../../_components/CardVeiculo'
 
 interface PageProps {
@@ -56,33 +61,50 @@ export default function EditarAbastecimento({ params }: PageProps) {
   const router = useRouter()
   const dispatch = useDispatch()
   const [valorTotal, setValorTotal] = useState<number>(0)
-  const [isEditing, setIsEditing] = useState(false)
   const [abcodigo, setAbcodigo] = useState<string>('')
-  const [veiculo, setVeiculo] = useState<VeiculosType | null>(null)
+  const [veiculoSelecionado, setVeiculoSelecionado] = useState<string>('')
   const user: UsuarioType = useSelector((state: any) => state.userReducer)
+  const [veiculos, setVeiculos] = useState<VeiculosType[]>([])
 
   async function onSalvarAbastecimento(data: AbastecimentosType) {
-    if (user.uscodigo && abcodigo) {
+    if (user.uscodigo) {
       dispatch(setLoading(true))
 
-      data.abcodigo = abcodigo
+      if (veiculoSelecionado.length <= 0) {
+        toast('Selecione um veículo!')
+        dispatch(setLoading(false))
+        return
+      }
+
       data.abusuario = user.uscodigo
       data.abvalortotal = parseFloat(valorTotal.toFixed(2))
       data.abhodometro = parseInt(data.abhodometro, 10)
       data.abvalorlitro = parseFloat(data.abvalorlitro)
       data.ablitros = parseFloat(data.ablitros)
+      data.abveiculo = veiculoSelecionado
 
-      const response = await updateAbastecimento(data)
+      if (abcodigo != '0') {
+        data.abcodigo = abcodigo
 
-      if (response != undefined) {
-        reset()
-        router.back()
-        toast.success('Abastecimento atualizado com sucesso!')
-        setIsEditing(false)
-        await carregarAbastecimento()
+        const response = await updateAbastecimento(data)
+
+        if (response != undefined) {
+          toast.success('Abastecimento atualizado com sucesso!')
+          reset()
+          router.back()
+          await carregarAbastecimento()
+        }
+
+        dispatch(setLoading(false))
+      } else {
+        const response = await createAbastecimento(data)
+
+        if (response != undefined) {
+          toast.success('Abastecimento registrado com sucesso!')
+          reset()
+          router.back()
+        }
       }
-
-      dispatch(setLoading(false))
     }
   }
 
@@ -107,23 +129,9 @@ export default function EditarAbastecimento({ params }: PageProps) {
         if (abastecimento.abveiculo) {
           const veiculoResponse = await findVeiculoById(abastecimento.abveiculo)
           if (veiculoResponse != undefined) {
-            setVeiculo(veiculoResponse.veiculo)
+            setVeiculoSelecionado(veiculoResponse.veiculo.vecodigo)
           }
         }
-      }
-
-      dispatch(setLoading(false))
-    }
-  }
-
-  async function onDeletarAbastecimento() {
-    if (abcodigo) {
-      dispatch(setLoading(true))
-      const response = await deleteAbastecimento(abcodigo)
-
-      if (response != undefined) {
-        toast.success('Abastecimento excluído com sucesso!')
-        router.back()
       }
 
       dispatch(setLoading(false))
@@ -145,31 +153,33 @@ export default function EditarAbastecimento({ params }: PageProps) {
   }, [abcodigo])
 
   useEffect(() => {
+    const consultaDados = async () => {
+      if (user.uscodigo) {
+        dispatch(setLoading(true))
+        const response = await findAllVeiculos(user.uscodigo)
+
+        if (response != undefined) {
+          setVeiculos(response.veiculos)
+        }
+
+        dispatch(setLoading(false))
+      }
+    }
+
+    consultaDados()
+  }, [])
+
+  useEffect(() => {
     setValorTotal(watch('ablitros') * watch('abvalorlitro'))
   }, [watch('abvalorlitro'), watch('ablitros')])
 
-  if (!abcodigo) {
-    return (
-      <BaseLayout title="Editar Abastecimento" navbar={false} voltar>
-        <div className="flex items-center justify-center h-64">
-          <p className="text-gray-500">Carregando...</p>
-        </div>
-      </BaseLayout>
-    )
-  }
-
-  if (!veiculo) {
-    return (
-      <BaseLayout title="Editar Abastecimento" navbar={false} voltar>
-        <div className="flex items-center justify-center h-64">
-          <p className="text-gray-500">Carregando...</p>
-        </div>
-      </BaseLayout>
-    )
-  }
-
   return (
-    <BaseLayout title="Editar Abastecimento" navbar={false} voltar>
+    <BaseLayout
+      title={
+        abcodigo == '0' ? 'Cadastro de Abastecimento' : 'Editar Abastecimento'
+      }
+      navbar={false}
+      voltar>
       {/* Informações do Veículo */}
       <div className="transition-all animate-slide-up">
         <Subtitle
@@ -177,13 +187,56 @@ export default function EditarAbastecimento({ params }: PageProps) {
           icon={<GasPump size={20} className="text-black" />}
         />
 
-        <CardVeiculo
-          veiculo={veiculo.venome}
-          placa={veiculo.veplaca}
-          hodometro={veiculo.vehodometro}
-          select={true}
-          acess={false}
-        />
+        <div className="max-h-[250px] overflow-x-scroll mt-5">
+          {veiculos.length > 0 ? (
+            veiculos.map((veiculo: VeiculosType, index: number) => {
+              const isSelect = veiculoSelecionado == veiculo.vecodigo
+
+              return (
+                <CardVeiculo
+                  key={index}
+                  placa={veiculo.veplaca}
+                  veiculo={veiculo.venome}
+                  hodometro={veiculo.vehodometro}
+                  acess={false}
+                  select={isSelect}
+                  onClick={() => {
+                    if (veiculo.vecodigo) {
+                      if (veiculoSelecionado == veiculo.vecodigo) {
+                        setVeiculoSelecionado('')
+                      } else {
+                        setVeiculoSelecionado(veiculo.vecodigo)
+                      }
+                    }
+                  }}
+                />
+              )
+            })
+          ) : (
+            <div>
+              <div className="flex items-center justify-center mb-4">
+                <Button
+                  title="Cadastrar novo veículo"
+                  className="bg-black"
+                  iconRight={<Plus size={20} />}
+                  onClick={() => {
+                    router.push('/garage/cadastro')
+                  }}
+                />
+              </div>
+
+              <div className="border rounded-2xl p-4 shadow-sm border-gray-200 bg-white">
+                <Info
+                  size={40}
+                  className="text-black text-center w-full m-auto"
+                />
+                <p className="text-center text-black">
+                  Nenhum veículo cadastrado
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Formulário de Edição */}
@@ -287,7 +340,7 @@ export default function EditarAbastecimento({ params }: PageProps) {
             }}
           />
           <Button
-            title="Atualizar"
+            title={abcodigo == '0' ? 'Cadastrar' : 'Atualizar'}
             onClick={handleSubmit(onSalvarAbastecimento)}
             className="bg-green-600 hover:bg-green-500 active:bg-green-600 w-full"
           />

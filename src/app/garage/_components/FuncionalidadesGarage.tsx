@@ -24,7 +24,7 @@ export default function FuncionalidadesGarage() {
         <CardFuncionalidade
           className="bg-red-200 hover:bg-red-300 active:bg-red-200"
           onClick={() => {
-            router.push('/garage/abastecimentos')
+            router.push('/garage/abastecimentos/0')
           }}
           icon={<GasPump size={40} className="text-red-600" />}
         />

@@ -7,7 +7,6 @@ import { useRouter } from 'next/navigation'
 import BaseLayout from '@/templates/BaseLayout'
 import Subtitle from '@/components/Subtitle'
 import {
-  CalendarDots,
   GasPump,
   Gauge,
   Info,
@@ -237,7 +236,7 @@ export default function Abastecimentos() {
           />
         </div>
 
-        {/* Quando */}
+        {/* Data */}
         <div className="mt-1">
           <div className="mb-2">
             <label className="text-gray-700 font-medium">
