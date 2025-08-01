@@ -27,6 +27,7 @@ import { FormatarValorEmReais } from '@/services/formatters'
 import { findAllVeiculos } from '@/store/Veiculos'
 import { VeiculosType } from '@/types/VeiculosType'
 import { createAbastecimento } from '@/store/Abastecimentos'
+import DatePicker from '@/components/DatePicker'
 
 export default function Abastecimentos() {
   AuthUser()
@@ -34,6 +35,7 @@ export default function Abastecimentos() {
     handleSubmit,
     register,
     watch,
+    setValue,
     reset,
     formState: { errors }
   } = useForm<AbastecimentosType>({
@@ -164,7 +166,7 @@ export default function Abastecimentos() {
         </div>
       </div>
 
-      <div className="mt-5 transition-all animate-slide-up">
+      <div className="mt-5 transition-all animate-slide-up w-full">
         <Subtitle
           title="Informações do Abastecimento"
           icon={<GasPump size={20} className="text-black" />}
@@ -237,21 +239,23 @@ export default function Abastecimentos() {
 
         {/* Quando */}
         <div className="mt-1">
-          <InputComponent
-            id="abquando"
-            type="date"
-            placeholder="Informe a data"
-            className="w-full bg-gray-50 text-gray-900 transition-all duration-300 focus:ring-2 focus:ring-orange-1000/50 mb-4"
-            icon={<CalendarDots size={22} className="text-gray-500" />}
-            textLabel="Data"
-            styleLabel="text-gray-700 font-medium"
-            requiredItem
-            {...register('abquando', {
-              required: true
-            })}
-            textError={errors.abquando && <TextRequired />}
-            error={errors.abquando}
+          <div className="mb-2">
+            <label className="text-gray-700 font-medium">
+              Data <span className="text-red-500">*</span>
+            </label>
+          </div>
+          <DatePicker
+            value={watch('abquando') || ''}
+            onChange={(date) => setValue('abquando', date)}
+            placeholder="Selecione a data do abastecimento"
+            className="w-full"
+            required
           />
+          {errors.abquando && (
+            <div className="mt-1 text-red-500 text-sm">
+              <TextRequired />
+            </div>
+          )}
         </div>
       </div>
 

@@ -138,8 +138,7 @@ export default function CadastrarUsuario() {
       title=" Criar Nova Conta"
       description="Preencha os campos abaixo para se cadastrar na plataforma"
       buttonVoltar
-      styleBase={false}
-      menu={false}>
+      styleBase={false}>
       <div className="w-full bg-white rounded-2xl shadow-xl overflow-hidden animate-fade-in-up">
         <div className="p-8">
           {/* Dados Pessoais */}
