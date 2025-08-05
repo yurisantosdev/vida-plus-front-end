@@ -22,6 +22,8 @@ import {
   MenuItems
 } from '@headlessui/react'
 import { useRouter, usePathname } from 'next/navigation'
+import { UsuarioType } from '@/types/UsuariosType'
+import { useSelector } from 'react-redux'
 
 export default function Navbar() {
   const router = useRouter()
@@ -41,6 +43,7 @@ export default function Navbar() {
       route: '/checklists'
     }
   ]
+  const user: UsuarioType = useSelector((state: any) => state.userReducer)
 
   function classNames(...classes: string[]) {
     return classes.filter(Boolean).join(' ')
@@ -105,8 +108,8 @@ export default function Navbar() {
               <MenuButton className="cursor-pointer relative flex rounded-full bg-gray-1200 text-sm focus:outline-hidden focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-gray-800">
                 <span className="absolute -inset-1.5" />
                 <img
-                  alt=""
-                  src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                  alt="Foto do usuário"
+                  src={user.usfoto}
                   className="size-8 rounded-full"
                 />
               </MenuButton>
