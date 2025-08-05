@@ -10,9 +10,11 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/Button'
 import { validateEmail } from '@/utils/validators'
 import toast from 'react-hot-toast'
-import { EsqueciSenhaType } from '@/types/UsuariosType'
-import { solicitarRecuperacaoSenha } from '@/store/Usuario'
 import BaseLayout from '@/templates/BaseLayout'
+
+export type EsqueciSenhaType = {
+  email: string | null
+}
 
 export default function EsqueciSenha() {
   const router = useRouter()
@@ -50,8 +52,7 @@ export default function EsqueciSenha() {
       description="Digite seu email cadastrado para receber as instruções de
               recuperação de senha."
       buttonVoltar
-      styleBase={false}
-      menu={false}>
+      styleBase={false}>
       <div className="md:w-full max-w-md m-auto animate-fade-in-up">
         <div className="p-8">
           <div className="space-y-6">
@@ -67,7 +68,7 @@ export default function EsqueciSenha() {
               {...register('email', {
                 required: true,
                 validate: {
-                  validEmail: (value) =>
+                  validEmail: (value: any) =>
                     validateEmail(value) || 'Email inválido'
                 }
               })}
@@ -92,4 +93,7 @@ export default function EsqueciSenha() {
       </div>
     </BaseLayout>
   )
+}
+function solicitarRecuperacaoSenha(data: EsqueciSenhaType) {
+  throw new Error('Function not implemented.')
 }

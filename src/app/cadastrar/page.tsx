@@ -1,456 +1,342 @@
 'use client'
-import React, { useEffect, useState, ReactNode } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { setLoading } from '@/redux/loading/actions'
 import { useForm } from 'react-hook-form'
-import { CriarUsuario, CriarUsuarioType } from '@/types/UsuariosType'
+import { UsuarioType } from '@/types/UsuariosType'
 import InputComponent from '@/components/Input'
 import {
   User,
   Envelope,
   Lock,
-  MapPin,
-  House,
-  Hash,
-  MapTrifold,
-  Buildings,
-  Signpost,
-  Compass,
   Eye,
-  EyeSlash
+  EyeSlash,
+  ArrowLeft,
+  ShieldCheck
 } from '@phosphor-icons/react'
 import TextRequired from '@/components/TextRequired'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/Button'
-import { formatCEP, consultarCEP } from '@/utils/formatters'
-import {
-  validateEmail,
-  validateFullName,
-  validateCEP
-} from '@/utils/validators'
+import { Card, CardHeader, CardContent } from '@/components/Card'
+import { validateEmail, validateFullName } from '@/utils/validators'
 import toast from 'react-hot-toast'
-import BaseLayout from '@/templates/BaseLayout'
+import BaseApp from '@/components/BaseApp'
+import { criarUsuario } from '@/store/Usuarios'
+import { ImageUpload } from '@/components/ImageUpload'
+import { fileToBase64 } from '@/utils/fileToBase64'
 
 export default function CadastrarUsuario() {
   const router = useRouter()
+  const dispatch = useDispatch()
   const [typePassword, setTypePassword] = useState<'text' | 'password'>(
     'password'
   )
   const [typeConfirmPassword, setTypeConfirmPassword] = useState<
     'text' | 'password'
   >('password')
-  const [iconPassword, setIconPassword] = useState<ReactNode>(
-    <EyeSlash className="p-1" size={30} />
+  const [iconPassword, setIconPassword] = useState<React.ReactNode>(
+    <EyeSlash size={20} />
   )
-  const [iconConfirmPassword, setIconConfirmPassword] = useState<ReactNode>(
-    <EyeSlash className="p-1" size={30} />
-  )
+  const [iconConfirmPassword, setIconConfirmPassword] =
+    useState<React.ReactNode>(<EyeSlash size={20} />)
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+
   const {
     handleSubmit,
     register,
-    setValue,
     watch,
     reset,
     formState: { errors }
-  } = useForm<CriarUsuarioType>({
+  } = useForm<UsuarioType>({
     defaultValues: {
       usnome: '',
       usemail: '',
       ussenha: '',
       confirmarSenha: '',
-      usendereco: '',
-      edrua: '',
-      edestado: '',
-      edmunicipio: '',
-      ednumero: '',
-      edcomplemento: '',
-      edpontoreferencia: '',
-      edcep: '',
-      edbairro: '',
-      edlatitude: '',
-      edlongitude: '',
-      edproblema: false
+      usfoto: ''
     }
   })
-  const dispatch = useDispatch()
 
   useEffect(() => {
     dispatch(setLoading(false))
-  }, [])
+  }, [dispatch])
 
-  const cep = watch('edcep')
+  const handleImageSelect = (file: File) => {
+    setSelectedFile(file)
 
-  useEffect(() => {
-    if (cep) {
-      const cepFormatado = formatCEP(cep)
-      setValue('edcep', cepFormatado)
-
-      if (validateCEP(cepFormatado)) {
-        consultarCEP(cepFormatado).then((data) => {
-          if (data) {
-            setValue('edrua', data.logradouro)
-            setValue('edbairro', data.bairro)
-            setValue('edmunicipio', data.localidade)
-            setValue('edestado', data.uf)
-          }
-        })
-      }
+    // Criar preview
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      setPreviewUrl(e.target?.result as string)
     }
-  }, [cep, setValue])
+    reader.readAsDataURL(file)
+  }
 
-  async function onCadastrarUsuario(data: CriarUsuarioType) {
+  const handleImageRemove = () => {
+    setSelectedFile(null)
+    setPreviewUrl(null)
+  }
+
+  async function onCadastrarUsuario(data: UsuarioType) {
     dispatch(setLoading(true))
 
-    const objCriarUsuario: CriarUsuario = {
-      usuario: {
-        usnome: data.usnome,
-        usemail: data.usemail,
-        ussenha: data.ussenha
-      },
-      endereco: {
-        edrua: data.edrua,
-        edestado: data.edestado,
-        edmunicipio: data.edmunicipio,
-        ednumero: data.ednumero,
-        edcomplemento: data.edcomplemento,
-        edpontoreferencia: data.edpontoreferencia,
-        edcep: data.edcep,
-        edbairro: data.edbairro,
-        edlatitude: data.edlatitude,
-        edlongitude: data.edlongitude,
-        edproblema: false
-      }
+    if (selectedFile) {
+      const base64String = await fileToBase64(selectedFile)
+      data.usfoto = base64String
     }
-
-    const response = await criarUsuario(objCriarUsuario)
+    const response = await criarUsuario(data)
 
     if (response != undefined) {
-      toast.success('Cadastro realizado com sucesso!')
+      toast.success('Conta criada com sucesso! Faça login para continuar.')
       reset()
-      router.push('/')
-    } else {
-      dispatch(setLoading(false))
+      setSelectedFile(null)
+      setPreviewUrl(null)
+      router.back()
     }
+
+    dispatch(setLoading(false))
   }
 
   return (
-    <BaseLayout
-      title=" Criar Nova Conta"
-      description="Preencha os campos abaixo para se cadastrar na plataforma"
-      buttonVoltar
-      styleBase={false}>
-      <div className="w-full bg-white rounded-2xl shadow-xl overflow-hidden animate-fade-in-up">
-        <div className="p-8">
-          {/* Dados Pessoais */}
-          <div className="space-y-6 mb-8">
-            <div>
-              <h2 className="text-lg text-gray-700 font-semibold mb-4 flex items-center">
-                <User size={24} className="text-orange-1000 mr-2" />
-                Dados Pessoais
-              </h2>
+    <BaseApp loading={false} styleBase={false} navbar={false}>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 py-8">
+        <div className="max-w-4xl mx-auto px-4">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <button
+              onClick={() => router.back()}
+              className="inline-flex items-center space-x-2 text-blue-600 hover:text-blue-700 transition-colors mb-4 cursor-pointer">
+              <ArrowLeft size={20} />
+              <span>Voltar ao login</span>
+            </button>
 
-              <div className="space-y-4">
-                <InputComponent
-                  id="usnome"
-                  type="text"
-                  placeholder="Informe seu nome"
-                  className="w-full bg-gray-50 text-gray-900 transition-all duration-300 focus:ring-2 focus:ring-orange-1000/50"
-                  icon={<User size={22} className="text-gray-500" />}
-                  textLabel="Nome completo"
-                  styleLabel="text-gray-700 font-medium"
-                  requiredItem
-                  {...register('usnome', {
-                    required: true,
-                    validate: {
-                      validName: (value) =>
-                        validateFullName(value) || 'Nome inválido'
-                    }
-                  })}
-                  textError={
-                    errors.usnome &&
-                    (errors.usnome.type === 'validName' ? (
-                      <span className="text-red-500 text-sm">
-                        Nome inválido
-                      </span>
-                    ) : (
-                      <TextRequired />
-                    ))
-                  }
-                  error={errors.usnome}
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              Criar Nova Conta
+            </h1>
+            <p className="text-gray-600 text-lg">
+              Junte-se ao Vida+ e comece a gerenciar sua frota de forma
+              inteligente
+            </p>
+          </div>
+
+          <Card className="max-w-3xl mx-auto">
+            <CardHeader
+              title="Informações da Conta"
+              subtitle="Preencha seus dados para criar sua conta">
+              <></>
+            </CardHeader>
+
+            <CardContent>
+              <div
+                onSubmit={handleSubmit(onCadastrarUsuario)}
+                className="space-y-5">
+                {/* Foto do Usuário */}
+                <ImageUpload
+                  onImageSelect={handleImageSelect}
+                  onImageRemove={handleImageRemove}
+                  selectedFile={selectedFile}
+                  previewUrl={previewUrl}
+                  label="Foto do Perfil"
+                  description="Adicione uma foto para personalizar seu perfil"
+                  size="md"
+                  maxSize={5}
                 />
 
-                <InputComponent
-                  id="usemail"
-                  type="email"
-                  placeholder="Informe seu email"
-                  className="w-full bg-gray-50 text-gray-900 transition-all duration-300 focus:ring-2 focus:ring-orange-1000/50"
-                  icon={<Envelope size={22} className="text-gray-500" />}
-                  textLabel="Email"
-                  styleLabel="text-gray-700 font-medium"
-                  requiredItem
-                  {...register('usemail', {
-                    required: true,
-                    validate: {
-                      validEmail: (value) =>
-                        validateEmail(value) || 'Email inválido'
-                    }
-                  })}
-                  textError={
-                    errors.usemail &&
-                    (errors.usemail.type === 'validEmail' ? (
-                      <span className="text-red-500 text-sm">
-                        Email inválido
-                      </span>
-                    ) : (
-                      <TextRequired />
-                    ))
-                  }
-                  error={errors.usemail}
-                />
+                {/* Dados Pessoais */}
+                <div className="space-y-6">
+                  <div className="flex items-center space-x-3 mb-6">
+                    <div className="p-2 bg-blue-100 rounded-lg">
+                      <User size={24} className="text-blue-600" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-semibold text-gray-900">
+                        Dados Pessoais
+                      </h2>
+                      <p className="text-gray-600">
+                        Informações básicas para sua conta
+                      </p>
+                    </div>
+                  </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <InputComponent
-                    id="ussenha"
-                    type={typePassword}
-                    placeholder="Informe sua senha"
-                    className="w-full bg-gray-50 text-gray-900 transition-all duration-300 focus:ring-2 focus:ring-orange-1000/50"
-                    icon={<Lock size={22} className="text-gray-500" />}
-                    textLabel="Senha"
-                    styleLabel="text-gray-700 font-medium"
-                    requiredItem
-                    buttonRight={iconPassword}
-                    onClickButton={() => {
-                      if (typePassword === 'password') {
-                        setTypePassword('text')
-                        setIconPassword(
-                          <Eye
-                            className="p-1 text-gray-500 hover:text-gray-700 transition-colors"
-                            size={30}
-                          />
-                        )
-                      } else {
-                        setTypePassword('password')
-                        setIconPassword(
-                          <EyeSlash
-                            className="p-1 text-gray-500 hover:text-gray-700 transition-colors"
-                            size={30}
-                          />
-                        )
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <InputComponent
+                      id="usnome"
+                      type="text"
+                      placeholder="Seu nome completo"
+                      icon={
+                        <User
+                          size={20}
+                          className={
+                            errors.usnome ? 'text-red-600' : 'text-gray-400'
+                          }
+                        />
                       }
-                    }}
-                    {...register('ussenha', { required: true })}
-                    textError={
-                      errors.ussenha &&
-                      (errors.ussenha.type === 'validPassword' ? (
-                        <span className="text-red-500 text-sm">
-                          A senha deve ter no mínimo 8 caracteres, uma letra
-                          maiúscula, uma minúscula e um número
-                        </span>
-                      ) : (
-                        <TextRequired />
-                      ))
-                    }
-                    error={errors.ussenha}
+                      textLabel="Nome completo"
+                      className="mb-4"
+                      styleLabel="text-gray-700 font-medium text-sm"
+                      requiredItem
+                      {...register('usnome', {
+                        required: true,
+                        validate: {
+                          validName: (value) =>
+                            validateFullName(value) || 'Nome inválido'
+                        }
+                      })}
+                      textError={errors.usnome && <TextRequired />}
+                      error={errors.usnome}
+                    />
+
+                    <InputComponent
+                      id="usemail"
+                      type="email"
+                      placeholder="seu@email.com"
+                      icon={
+                        <Envelope
+                          size={20}
+                          className={
+                            errors.usemail ? 'text-red-600' : 'text-gray-400'
+                          }
+                        />
+                      }
+                      textLabel="E-mail"
+                      className="mb-4"
+                      styleLabel="text-gray-700 font-medium text-sm"
+                      requiredItem
+                      {...register('usemail', {
+                        required: true,
+                        validate: {
+                          validEmail: (value) =>
+                            validateEmail(value) || 'E-mail inválido'
+                        }
+                      })}
+                      textError={errors.usemail && <TextRequired />}
+                      error={errors.usemail}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <InputComponent
+                      id="ussenha"
+                      type={typePassword}
+                      placeholder="Mínimo 8 caracteres"
+                      icon={
+                        <Lock
+                          size={20}
+                          className={
+                            errors.ussenha ? 'text-red-600' : 'text-gray-400'
+                          }
+                        />
+                      }
+                      textLabel="Senha"
+                      className="mb-4"
+                      styleLabel="text-gray-700 font-medium text-sm"
+                      requiredItem
+                      buttonRight={iconPassword}
+                      onClickButton={() => {
+                        if (typePassword === 'password') {
+                          setTypePassword('text')
+                          setIconPassword(
+                            <Eye size={20} className="text-gray-400" />
+                          )
+                        } else {
+                          setTypePassword('password')
+                          setIconPassword(
+                            <EyeSlash size={20} className="text-gray-400" />
+                          )
+                        }
+                      }}
+                      {...register('ussenha', {
+                        required: true,
+                        minLength: 8
+                      })}
+                      textError={errors.ussenha && <TextRequired />}
+                      error={errors.ussenha}
+                    />
+
+                    <InputComponent
+                      id="confirmarSenha"
+                      type={typeConfirmPassword}
+                      placeholder="Confirme sua senha"
+                      icon={
+                        <ShieldCheck
+                          size={20}
+                          className={
+                            errors.confirmarSenha
+                              ? 'text-red-600'
+                              : 'text-gray-400'
+                          }
+                        />
+                      }
+                      textLabel="Confirmar Senha"
+                      className="mb-4"
+                      styleLabel="text-gray-700 font-medium text-sm"
+                      requiredItem
+                      buttonRight={iconConfirmPassword}
+                      onClickButton={() => {
+                        if (typeConfirmPassword === 'password') {
+                          setTypeConfirmPassword('text')
+                          setIconConfirmPassword(
+                            <Eye size={20} className="text-gray-400" />
+                          )
+                        } else {
+                          setTypeConfirmPassword('password')
+                          setIconConfirmPassword(
+                            <EyeSlash size={20} className="text-gray-400" />
+                          )
+                        }
+                      }}
+                      {...register('confirmarSenha', {
+                        required: true,
+                        validate: (value) =>
+                          value === watch('ussenha') ||
+                          'As senhas não coincidem'
+                      })}
+                      textError={errors.confirmarSenha && <TextRequired />}
+                      error={errors.confirmarSenha}
+                    />
+                  </div>
+                </div>
+
+                {/* Botões */}
+                <div className="flex flex-col space-y-3 pt-6 border-t border-gray-200">
+                  <Button
+                    onClick={handleSubmit(onCadastrarUsuario)}
+                    title="Criar Conta"
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white px-12 py-3 rounded-lg transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg font-medium"
                   />
 
-                  <InputComponent
-                    id="confirmarSenha"
-                    type={typeConfirmPassword}
-                    placeholder="Confirme sua senha"
-                    className="w-full bg-gray-50 text-gray-900 transition-all duration-300 focus:ring-2 focus:ring-orange-1000/50"
-                    icon={<Lock size={22} className="text-gray-500" />}
-                    textLabel="Confirmar Senha"
-                    styleLabel="text-gray-700 font-medium"
-                    requiredItem
-                    buttonRight={iconConfirmPassword}
-                    onClickButton={() => {
-                      if (typeConfirmPassword === 'password') {
-                        setTypeConfirmPassword('text')
-                        setIconConfirmPassword(
-                          <Eye
-                            className="p-1 text-gray-500 hover:text-gray-700 transition-colors"
-                            size={30}
-                          />
-                        )
-                      } else {
-                        setTypeConfirmPassword('password')
-                        setIconConfirmPassword(
-                          <EyeSlash
-                            className="p-1 text-gray-500 hover:text-gray-700 transition-colors"
-                            size={30}
-                          />
-                        )
-                      }
+                  <Button
+                    onClick={() => {
+                      router.back()
                     }}
-                    {...register('confirmarSenha', {
-                      required: true,
-                      validate: (value) =>
-                        value === watch('ussenha') || 'As senhas não coincidem'
-                    })}
-                    textError={
-                      errors.confirmarSenha &&
-                      (errors.confirmarSenha.type === 'validate' ? (
-                        <span className="text-red-500 text-sm">
-                          As senhas não coincidem
-                        </span>
-                      ) : (
-                        <TextRequired />
-                      ))
-                    }
-                    error={errors.confirmarSenha}
+                    title="Já tenho conta"
+                    className="w-full border border-blue-600 hover:bg-blue-700 text-blue-600 hover:text-white px-12 py-3 rounded-lg transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg font-medium"
                   />
                 </div>
               </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
 
-          {/* Endereço */}
-          <div className="space-y-6">
-            <h2 className="text-lg text-gray-700 font-semibold mb-4 flex items-center">
-              <MapPin size={24} className="text-orange-1000 mr-2" />
-              Endereço
-            </h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <InputComponent
-                id="edcep"
-                type="text"
-                placeholder="Informe o CEP"
-                className="w-full bg-gray-50 text-gray-900 transition-all duration-300 focus:ring-2 focus:ring-orange-1000/50"
-                icon={<MapPin size={22} className="text-gray-500" />}
-                textLabel="CEP"
-                styleLabel="text-gray-700 font-medium"
-                requiredItem
-                maxLength={9}
-                {...register('edcep', {
-                  required: true,
-                  validate: {
-                    validCEP: (value: any) =>
-                      validateCEP(value) || 'CEP inválido'
-                  }
-                })}
-                textError={
-                  errors.edcep &&
-                  (errors.edcep.type === 'validCEP' ? (
-                    <span className="text-red-500 text-sm">CEP inválido</span>
-                  ) : (
-                    <TextRequired className="mt-1" />
-                  ))
-                }
-                error={errors.edcep}
-              />
-
-              <InputComponent
-                id="edrua"
-                type="text"
-                placeholder="Informe a rua"
-                className="w-full bg-gray-50 text-gray-900 transition-all duration-300 focus:ring-2 focus:ring-orange-1000/50"
-                icon={<House size={22} className="text-gray-500" />}
-                textLabel="Rua"
-                styleLabel="text-gray-700 font-medium"
-                requiredItem
-                {...register('edrua', { required: true })}
-                textError={errors.edrua && <TextRequired className="mt-1" />}
-                error={errors.edrua}
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-              <InputComponent
-                id="ednumero"
-                type="text"
-                placeholder="Número"
-                className="w-full bg-gray-50 text-gray-900 transition-all duration-300 focus:ring-2 focus:ring-orange-1000/50"
-                textLabel="Número"
-                styleLabel="text-gray-700 font-medium"
-                icon={<Hash size={22} className="text-gray-500" />}
-                requiredItem
-                {...register('ednumero', { required: true })}
-                textError={errors.ednumero && <TextRequired className="mt-1" />}
-                error={errors.ednumero}
-              />
-
-              <InputComponent
-                id="edbairro"
-                type="text"
-                placeholder="Bairro"
-                className="w-full bg-gray-50 text-gray-900 transition-all duration-300 focus:ring-2 focus:ring-orange-1000/50"
-                textLabel="Bairro"
-                styleLabel="text-gray-700 font-medium"
-                icon={<MapTrifold size={22} className="text-gray-500" />}
-                requiredItem
-                {...register('edbairro', { required: true })}
-                textError={errors.edbairro && <TextRequired className="mt-1" />}
-                error={errors.edbairro}
-              />
-
-              <InputComponent
-                id="edcomplemento"
-                type="text"
-                placeholder="Complemento"
-                className="w-full bg-gray-50 text-gray-900 transition-all duration-300 focus:ring-2 focus:ring-orange-1000/50"
-                textLabel="Complemento"
-                styleLabel="text-gray-700 font-medium"
-                icon={<Signpost size={22} className="text-gray-500" />}
-                {...register('edcomplemento')}
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <InputComponent
-                id="edmunicipio"
-                type="text"
-                disabled
-                placeholder="Município"
-                className="w-full bg-zinc-300 cursor-not-allowed text-gray-900 transition-all duration-300 focus:ring-2 focus:ring-orange-1000/50"
-                textLabel="Município"
-                styleLabel="text-gray-700 font-medium"
-                icon={<Buildings size={22} className="text-gray-500" />}
-                requiredItem
-                {...register('edmunicipio', { required: true })}
-                textError={
-                  errors.edmunicipio && <TextRequired className="mt-1" />
-                }
-                error={errors.edmunicipio}
-              />
-
-              <InputComponent
-                id="edestado"
-                type="text"
-                disabled
-                placeholder="Estado"
-                className="w-full bg-zinc-300 cursor-not-allowed text-gray-900 transition-all duration-300 focus:ring-2 focus:ring-orange-1000/50"
-                textLabel="Estado"
-                styleLabel="text-gray-700 font-medium"
-                icon={<Compass size={22} className="text-gray-500" />}
-                requiredItem
-                {...register('edestado', { required: true })}
-                textError={errors.edestado && <TextRequired className="mt-1" />}
-                error={errors.edestado}
-              />
-            </div>
-
-            <InputComponent
-              id="edpontoreferencia"
-              type="text"
-              placeholder="Ponto de referência"
-              className="w-full bg-gray-50 text-gray-900 transition-all duration-300 focus:ring-2 focus:ring-orange-1000/50"
-              textLabel="Ponto de referência"
-              styleLabel="text-gray-700 font-medium"
-              icon={<MapPin size={22} className="text-gray-500" />}
-              {...register('edpontoreferencia')}
-            />
-          </div>
-
-          <div className="flex justify-center mt-8">
-            <Button
-              onClick={handleSubmit(onCadastrarUsuario)}
-              title="Criar Conta"
-              className="w-full md:w-auto bg-orange-1000 hover:bg-orange-900 text-white px-12 py-3 rounded-lg transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg font-medium"
-            />
+          {/* Footer */}
+          <div className="text-center mt-8">
+            <p className="text-gray-500 text-sm">
+              Ao criar uma conta, você concorda com nossos{' '}
+              <a
+                href="#"
+                className="text-blue-600 hover:text-blue-700 underline">
+                Termos de Serviço
+              </a>{' '}
+              e{' '}
+              <a
+                href="#"
+                className="text-blue-600 hover:text-blue-700 underline">
+                Política de Privacidade
+              </a>
+            </p>
           </div>
         </div>
       </div>
-    </BaseLayout>
+    </BaseApp>
   )
 }

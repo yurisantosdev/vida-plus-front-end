@@ -3,6 +3,7 @@ import React, { useEffect } from 'react'
 import { Toaster } from 'react-hot-toast'
 import { BaseAppInterface } from '@/Interfaces/BaseAppInterface'
 import Navbar from './Navbar'
+import { LoadingPage } from './LoadingSpinner'
 
 export default function BaseApp({
   children,
@@ -23,15 +24,16 @@ export default function BaseApp({
     }
   }, [loading])
 
+  if (loading) {
+    return <LoadingPage text="Carregando..." />
+  }
+
   return (
-    <div className="bg-gray-100 h-screen">
-      <div
-        className={`${
-          styleBase && 'md:w-[65%] w-full md:m-auto bg-gray-100 p-2 '
-        }`}>
+    <div className="min-h-screen bg-gray-50">
+      <div className={`${styleBase && 'max-w-5xl mx-auto min-h-screen'}`}>
         {navbar && <Navbar />}
         {extraComponentTitle && extraComponentTitle}
-        {children}
+        <main className="flex-1">{children}</main>
       </div>
 
       <Toaster
@@ -41,35 +43,53 @@ export default function BaseApp({
         containerClassName=""
         containerStyle={{ zIndex: 999999999999 }}
         toastOptions={{
-          className: '',
-          duration: 2000,
+          className:
+            '!bg-gray-900 !text-white !border !border-gray-700 !rounded-xl !shadow-xl',
+          duration: 3000,
           removeDelay: 500,
           style: {
-            background: '#232323',
-            color: '#fff'
+            background: '#111827',
+            color: '#ffffff',
+            border: '1px solid #374151',
+            borderRadius: '12px',
+            boxShadow:
+              '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
+            fontSize: '14px',
+            fontWeight: '500'
           },
 
           success: {
-            duration: 1000,
+            duration: 2000,
             iconTheme: {
-              primary: 'green',
-              secondary: 'black'
+              primary: '#22c55e',
+              secondary: '#ffffff'
+            },
+            style: {
+              background: '#064e3b',
+              border: '1px solid #059669'
+            }
+          },
+
+          error: {
+            duration: 4000,
+            iconTheme: {
+              primary: '#ef4444',
+              secondary: '#ffffff'
+            },
+            style: {
+              background: '#7f1d1d',
+              border: '1px solid #dc2626'
+            }
+          },
+
+          loading: {
+            style: {
+              background: '#1e3a8a',
+              border: '1px solid #3b82f6'
             }
           }
         }}
       />
-
-      {loading && (
-        <div className="fixed top-0 left-0 w-full h-full bg-black/60 backdrop-blur-xs flex justify-center items-center z-[99999999]">
-          <div className="flex flex-col items-center gap-4">
-            <div className="relative">
-              <div className="animate-spin rounded-full h-24 w-24 border-4 border-blue-600/30"></div>
-              <div className="animate-spin rounded-full h-24 w-24 border-4 border-t-blue-600 border-r-blue-600 absolute top-0 left-0"></div>
-            </div>
-            <p className="text-white text-lg font-medium">Carregando...</p>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
