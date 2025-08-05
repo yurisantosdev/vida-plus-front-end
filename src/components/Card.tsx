@@ -35,9 +35,7 @@ export function Card({
     lg: 'p-8'
   }
 
-  const hoverClasses = hover
-    ? 'hover:shadow-lg hover:scale-[1.02] cursor-pointer'
-    : ''
+  const hoverClasses = hover ? 'hover:shadow-lg hover:scale-[1.02]' : ''
   const clickableClasses = onClick ? 'cursor-pointer' : ''
 
   return (

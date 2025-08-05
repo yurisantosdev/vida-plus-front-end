@@ -1,6 +1,6 @@
 'use client'
 import { AuthUser } from '@/services/auth'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { UsuarioType } from '@/types/UsuariosType'
 import { useRouter } from 'next/navigation'
@@ -12,19 +12,21 @@ import {
   Wrench,
   GasPump,
   Calendar,
-  CheckCircle,
   ArrowRight,
   Users,
   Clock,
   CurrencyDollar,
   CurrencyCircleDollar
 } from '@phosphor-icons/react'
+import { VeiculosType } from '@/types/VeiculosType'
+import { findAllVeiculos } from '@/store/Veiculos'
 
 export default function HomePage() {
   AuthUser()
   const router = useRouter()
   const dispatch = useDispatch()
   const user: UsuarioType = useSelector((state: any) => state.userReducer)
+  const [veiculos, setVeiculos] = useState<VeiculosType[]>([])
 
   const quickActions = [
     {
@@ -52,6 +54,16 @@ export default function HomePage() {
       onClick: () => router.push('/garage/despesas')
     }
   ]
+
+  useEffect(() => {
+    const consultaDados = async () => {
+      if (user.uscodigo) {
+        const response = await findAllVeiculos(user.uscodigo)
+        setVeiculos(response.veiculos)
+      }
+    }
+    consultaDados()
+  }, [])
 
   return (
     <BaseLayout>
@@ -86,10 +98,8 @@ export default function HomePage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <StatCard
             title="Total de Veículos"
-            value="5"
-            subtitle="Frota ativa"
+            value={veiculos.length}
             icon={<Car size={24} />}
-            trend={{ value: 12, isPositive: true }}
             variant="primary"
           />
           <StatCard
@@ -107,26 +117,17 @@ export default function HomePage() {
             icon={<Wrench size={24} />}
             variant="danger"
           />
-          <StatCard
-            title="Eficiência"
-            value="94%"
-            subtitle="Meta: 90%"
-            icon={<Users size={24} />}
-            trend={{ value: 5, isPositive: true }}
-            variant="success"
-          />
         </div>
 
-        {/* Layout em duas colunas */}
         <div>
           {/* Ações rápidas */}
           <div className="w-full">
             <Card>
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-semibold text-gray-900">
+              <div className="md:flex md:items-center md:justify-between mb-6">
+                <h2 className="text-xl md:text-start text-center font-semibold text-gray-900">
                   Ações Rápidas
                 </h2>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm md:text-start text-center text-gray-500">
                   Acesse rapidamente as principais funcionalidades
                 </p>
               </div>
@@ -157,21 +158,6 @@ export default function HomePage() {
               </div>
             </Card>
           </div>
-        </div>
-
-        {/* Seção financeira */}
-        <div className="mt-8">
-          <Card>
-            <div className="mb-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-2">
-                Resumo Financeiro
-              </h2>
-              <p className="text-sm text-gray-500">
-                Visão geral dos seus gastos e receitas
-              </p>
-            </div>
-            <CardSaldos />
-          </Card>
         </div>
       </div>
     </BaseLayout>
