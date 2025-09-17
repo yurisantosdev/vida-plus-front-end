@@ -1,17 +1,28 @@
-import { CategoriasTransacoesType } from './CategoriasTransacoesType';
 import { ContasType } from './ContasType';
+import { CategoriasTransacoesType } from './CategoriasTransacoesType';
+import { SubcategoriasTransacoesType } from './SubcategoriasTransacoesType';
 
 export type TransacoesType = {
   tscodigo?: string;
   tstitulo: string;
-  tsdescricao: string;
+  tsdescricao?: string;
   tsconta: string;
   tsvalor: number;
-  tsdespesa: boolean;
+  tstipo: 'RECEITA' | 'DESPESA' | 'TRANSFERENCIA' | 'INVESTIMENTO' | 'RETIRADA';
+  tsstatus?: 'PENDENTE' | 'CONFIRMADA' | 'CANCELADA' | 'ESTORNADA';
   tsquando: string;
-  tscategoria: string;
+  tscategoria?: string;
+  tssubcategoria?: string;
+  tsrecorrente?: boolean;
+  tsfrequencia?: 'UMA_VEZ' | 'DIARIA' | 'SEMANAL' | 'QUINZENAL' | 'MENSAL' | 'BIMESTRAL' | 'TRIMESTRAL' | 'SEMESTRAL' | 'ANUAL';
+  tsdataInicio?: string;
+  tsdataFim?: string;
+  tscomprovante?: string;
+  tsnotas?: string;
+  tsusuario: string;
   createdAt?: string;
   updatedAt?: string;
   conta?: ContasType;
   categoria?: CategoriasTransacoesType;
+  subcategoria?: SubcategoriasTransacoesType;
 };

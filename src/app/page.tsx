@@ -21,6 +21,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import { loginUser, logoutUser } from '@/redux/user/actions'
 import { useRouter } from 'next/navigation'
 import { setLoading } from '@/redux/loading/actions'
+import { Card } from '@yurisantos/projetotesteai'
+import '@yurisantos/projetotesteai/dist/index.css'
 
 export default function Home() {
   const {
@@ -96,6 +98,10 @@ export default function Home() {
     <BaseApp loading={loading} styleBase={false} navbar={false}>
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
         <div className="flex min-h-screen">
+          <div className="bg-red-400 p-3">
+            <Card title="Meu Card">Conteúdo do card</Card>
+          </div>
+
           {/* Left Side - Features */}
           <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-600 to-indigo-700 p-12 text-white">
             <div className="max-w-md mx-auto flex flex-col justify-center">

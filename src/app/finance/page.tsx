@@ -6,6 +6,7 @@ import { UsuarioType } from '@/types/UsuariosType'
 import { useRouter } from 'next/navigation'
 import BaseLayout from '@/templates/BaseLayout'
 import CardSaldos from '@/components/Finance/CardSaldo'
+import FuncionalidadesFinance from '@/components/Finance/FuncionalidadesFinance'
 
 export default function Finance() {
   AuthUser()
@@ -15,8 +16,8 @@ export default function Finance() {
 
   return (
     <BaseLayout title="Finance">
-      <p className="text-center text-black text-2xl">Em desenvolvimento</p>
       <CardSaldos />
+      <FuncionalidadesFinance />
     </BaseLayout>
   )
 }

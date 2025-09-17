@@ -17,6 +17,7 @@
     "@reduxjs/toolkit": "^2.6.1",
     "@tailwindcss/postcss": "^4.1.4",
     "@types/leaflet": "^1.9.18",
+    "@yurisantos/projetotesteai": "^1.0.0",
     "axios": "^1.8.4",
     "chart.js": "^4.5.0",
     "chartjs-plugin-datalabels": "^2.2.0",
