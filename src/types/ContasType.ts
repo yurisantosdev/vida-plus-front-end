@@ -1,18 +1,12 @@
+import { TipoContasEnum } from '../enums/TipoContasEnum';
+
 export type ContasType = {
   ctcodigo?: string;
-  ctconta: string;
-  ctusuario: string;
-  ctinstituicao?: string;
-  ctsaldo?: number;
-  ctsaldoInicial?: number;
-  cttipoconta: 'CORRENTE' | 'POUPANCA' | 'SALARIO' | 'INVESTIMENTO' | 'CARTAO_CREDITO' | 'CARTAO_DEBITO' | 'DINHEIRO' | 'OUTRO';
-  ctstatus?: 'ATIVA' | 'INATIVA' | 'BLOQUEADA' | 'FECHADA';
-  ctlimiteCredito?: number;
-  ctdataVencimento?: string;
-  ctobservacao?: string;
-  ctcor?: string;
-  ctativo?: boolean;
+  ctnome: string;
+  cttitular: string;
+  ctsaldo: string;
+  ctbanco: string;
+  cttipoconta: TipoContasEnum;
   createdAt?: string;
   updatedAt?: string;
-  instituicao?: any;
 };

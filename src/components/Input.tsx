@@ -86,7 +86,7 @@ export default function Input({
           {buttonRight && (
             <div
               onClick={onClickButton}
-              className={`absolute top-2 cursor-pointer mr-3 right-0 flex justify-center items-center rounded-full ${
+              className={`absolute top-3 cursor-pointer mr-3 right-0 flex justify-center items-center rounded-full ${
                 error
                   ? 'text-red-600 hover:bg-red-300'
                   : 'text-gray-400 hover:bg-gray-100'

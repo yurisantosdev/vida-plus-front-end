@@ -1,9 +1,9 @@
 /* eslint-disable import/no-unresolved */
+import { UsuariosType } from '@/types/UsuairosType'
 import { api } from '../services/api'
 import toast from 'react-hot-toast'
-import { UsuarioType } from '@/types/UsuariosType'
 
-export const criarUsuario = async (data: UsuarioType) => {
+export const criarUsuario = async (data: UsuariosType) => {
   return await api
     .post(`/usuarios/create`, data)
     .then((response) => {

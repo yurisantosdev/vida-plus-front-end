@@ -1,28 +1,12 @@
-import { ContasType } from './ContasType';
-import { CategoriasTransacoesType } from './CategoriasTransacoesType';
-import { SubcategoriasTransacoesType } from './SubcategoriasTransacoesType';
+import { TipoTransacoesEnum } from 'src/enums/TipoTransacoesEnum';
 
 export type TransacoesType = {
-  tscodigo?: string;
-  tstitulo: string;
-  tsdescricao?: string;
-  tsconta: string;
-  tsvalor: number;
-  tstipo: 'RECEITA' | 'DESPESA' | 'TRANSFERENCIA' | 'INVESTIMENTO' | 'RETIRADA';
-  tsstatus?: 'PENDENTE' | 'CONFIRMADA' | 'CANCELADA' | 'ESTORNADA';
-  tsquando: string;
-  tscategoria?: string;
-  tssubcategoria?: string;
-  tsrecorrente?: boolean;
-  tsfrequencia?: 'UMA_VEZ' | 'DIARIA' | 'SEMANAL' | 'QUINZENAL' | 'MENSAL' | 'BIMESTRAL' | 'TRIMESTRAL' | 'SEMESTRAL' | 'ANUAL';
-  tsdataInicio?: string;
-  tsdataFim?: string;
-  tscomprovante?: string;
-  tsnotas?: string;
-  tsusuario: string;
+  trcodigo?: string;
+  trdata: string;
+  trvalor: string;
+  trconta: string;
+  trusuario: string;
+  trtipo: TipoTransacoesEnum;
   createdAt?: string;
   updatedAt?: string;
-  conta?: ContasType;
-  categoria?: CategoriasTransacoesType;
-  subcategoria?: SubcategoriasTransacoesType;
 };

@@ -1,16 +1,7 @@
 'use client'
 import InputComponent from '@/components/Input'
 import React, { ReactNode, useState, useEffect } from 'react'
-import {
-  User,
-  Lock,
-  Eye,
-  EyeSlash,
-  Car,
-  Wrench,
-  GasPump,
-  ChartLineUp
-} from '@phosphor-icons/react'
+import { User, Lock, Eye, EyeSlash } from '@phosphor-icons/react'
 import { Button } from '@/components/Button'
 import { useForm } from 'react-hook-form'
 import { LoginType } from '@/types/LoginType'
@@ -21,8 +12,6 @@ import { useDispatch, useSelector } from 'react-redux'
 import { loginUser, logoutUser } from '@/redux/user/actions'
 import { useRouter } from 'next/navigation'
 import { setLoading } from '@/redux/loading/actions'
-import { Card } from '@yurisantos/projetotesteai'
-import '@yurisantos/projetotesteai/dist/index.css'
 
 export default function Home() {
   const {
@@ -71,74 +60,18 @@ export default function Home() {
     }
   }
 
-  const features = [
-    {
-      icon: <Car size={24} className="text-white" />,
-      title: 'Gestão de Frota',
-      description: 'Controle completo dos seus veículos'
-    },
-    {
-      icon: <Wrench size={24} className="text-white" />,
-      title: 'Manutenções',
-      description: 'Acompanhe serviços e revisões'
-    },
-    {
-      icon: <GasPump size={24} className="text-white" />,
-      title: 'Abastecimentos',
-      description: 'Monitore gastos com combustível'
-    },
-    {
-      icon: <ChartLineUp size={24} className="text-white" />,
-      title: 'Relatórios',
-      description: 'Análises detalhadas e insights'
-    }
-  ]
-
   return (
     <BaseApp loading={loading} styleBase={false} navbar={false}>
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
         <div className="flex min-h-screen">
-          <div className="bg-red-400 p-3">
-            <Card title="Meu Card">Conteúdo do card</Card>
-          </div>
-
           {/* Left Side - Features */}
           <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-600 to-indigo-700 p-12 text-white">
             <div className="max-w-md mx-auto flex flex-col justify-center">
               <div className="mb-8">
                 <h1 className="text-4xl font-bold mb-4">Vida+</h1>
                 <p className="text-xl text-blue-100 leading-relaxed">
-                  A plataforma completa para gestão inteligente da sua frota de
-                  veículos
-                </p>
-              </div>
-
-              <div className="space-y-6">
-                {features.map((feature, index) => (
-                  <div
-                    key={index}
-                    className="flex items-start space-x-4 animate-fade-in-up"
-                    style={{ animationDelay: `${index * 0.1}s` }}>
-                    <div className="flex-shrink-0 w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center backdrop-blur-sm">
-                      {feature.icon}
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-lg mb-1">
-                        {feature.title}
-                      </h3>
-                      <p className="text-blue-100">{feature.description}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-12 p-6 bg-white/10 rounded-xl backdrop-blur-sm">
-                <p className="text-blue-100 text-sm">
-                  "O Vida+ revolucionou nossa gestão de frota. Agora temos
-                  controle total sobre manutenções, abastecimentos e custos."
-                </p>
-                <p className="text-white font-medium mt-2">
-                  - Equipe de Transportes
+                  A plataforma ideal para organizar e controlar suas finanças
+                  pessoais.
                 </p>
               </div>
             </div>
@@ -162,7 +95,7 @@ export default function Home() {
                   </p>
                 </div>
 
-                <form onSubmit={handleSubmit(onLogin)} className="space-y-6">
+                <div className="space-y-6">
                   <div>
                     <InputComponent
                       id="email"
@@ -253,7 +186,7 @@ export default function Home() {
                       onClick={() => router.push('/cadastrar')}
                     />
                   </div>
-                </form>
+                </div>
               </div>
 
               <div className="text-center mt-8">

@@ -1,9 +1,8 @@
-export type UsuarioType = {
+export type UsuariosType = {
   uscodigo?: string;
-  usnome: string;
   usemail: string;
+  usnome: string;
   ussenha: string;
-  usfoto: string;
   confirmarSenha?: string;
   createdAt?: string;
   updatedAt?: string;

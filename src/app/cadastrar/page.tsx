@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { setLoading } from '@/redux/loading/actions'
 import { useForm } from 'react-hook-form'
-import { UsuarioType } from '@/types/UsuariosType'
 import InputComponent from '@/components/Input'
 import {
   User,
@@ -17,13 +16,13 @@ import {
 import TextRequired from '@/components/TextRequired'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/Button'
-import { Card, CardHeader, CardContent } from '@/components/Card'
+import { Card, CardContent } from '@/components/Card'
 import { validateEmail, validateFullName } from '@/utils/validators'
 import toast from 'react-hot-toast'
 import BaseApp from '@/components/BaseApp'
 import { criarUsuario } from '@/store/Usuarios'
-import { ImageUpload } from '@/components/ImageUpload'
 import { fileToBase64 } from '@/utils/fileToBase64'
+import { UsuariosType } from '@/types/UsuairosType'
 
 export default function CadastrarUsuario() {
   const router = useRouter()
@@ -39,8 +38,6 @@ export default function CadastrarUsuario() {
   )
   const [iconConfirmPassword, setIconConfirmPassword] =
     useState<React.ReactNode>(<EyeSlash size={20} />)
-  const [selectedFile, setSelectedFile] = useState<File | null>(null)
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
 
   const {
     handleSubmit,
@@ -48,13 +45,12 @@ export default function CadastrarUsuario() {
     watch,
     reset,
     formState: { errors }
-  } = useForm<UsuarioType>({
+  } = useForm<UsuariosType>({
     defaultValues: {
       usnome: '',
       usemail: '',
       ussenha: '',
-      confirmarSenha: '',
-      usfoto: ''
+      confirmarSenha: ''
     }
   })
 
@@ -62,36 +58,14 @@ export default function CadastrarUsuario() {
     dispatch(setLoading(false))
   }, [dispatch])
 
-  const handleImageSelect = (file: File) => {
-    setSelectedFile(file)
-
-    // Criar preview
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      setPreviewUrl(e.target?.result as string)
-    }
-    reader.readAsDataURL(file)
-  }
-
-  const handleImageRemove = () => {
-    setSelectedFile(null)
-    setPreviewUrl(null)
-  }
-
-  async function onCadastrarUsuario(data: UsuarioType) {
+  async function onCadastrarUsuario(data: UsuariosType) {
     dispatch(setLoading(true))
 
-    if (selectedFile) {
-      const base64String = await fileToBase64(selectedFile)
-      data.usfoto = base64String
-    }
     const response = await criarUsuario(data)
 
     if (response != undefined) {
       toast.success('Conta criada com sucesso! Faça login para continuar.')
       reset()
-      setSelectedFile(null)
-      setPreviewUrl(null)
       router.back()
     }
 
@@ -115,34 +89,16 @@ export default function CadastrarUsuario() {
               Criar Nova Conta
             </h1>
             <p className="text-gray-600 text-lg">
-              Junte-se ao Vida+ e comece a gerenciar sua frota de forma
+              Junte-se ao Vida+ e comece a gerenciar suas finanças de forma
               inteligente
             </p>
           </div>
 
           <Card className="max-w-3xl mx-auto">
-            <CardHeader
-              title="Informações da Conta"
-              subtitle="Preencha seus dados para criar sua conta">
-              <></>
-            </CardHeader>
-
             <CardContent>
               <div
                 onSubmit={handleSubmit(onCadastrarUsuario)}
                 className="space-y-5">
-                {/* Foto do Usuário */}
-                <ImageUpload
-                  onImageSelect={handleImageSelect}
-                  onImageRemove={handleImageRemove}
-                  selectedFile={selectedFile}
-                  previewUrl={previewUrl}
-                  label="Foto do Perfil"
-                  description="Adicione uma foto para personalizar seu perfil"
-                  size="md"
-                  maxSize={5}
-                />
-
                 {/* Dados Pessoais */}
                 <div className="space-y-6">
                   <div className="flex items-center space-x-3 mb-6">
