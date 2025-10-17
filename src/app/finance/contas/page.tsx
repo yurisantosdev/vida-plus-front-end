@@ -16,6 +16,7 @@ import {
   Bank,
   CurrencyDollar
 } from '@phosphor-icons/react'
+import { CLickLabel } from '@/services/clickLabel'
 
 /**
  * Página de gerenciamento de contas bancárias
@@ -106,12 +107,12 @@ export default function Contas() {
 
   const handleNovaConta = () => {
     setContaEditando(null)
-    setShowModal(true)
+    CLickLabel('modalCadastroConta')
   }
 
   const handleEditarConta = (conta: ContasType) => {
     setContaEditando(conta)
-    setShowModal(true)
+    CLickLabel('modalCadastroConta')
   }
 
   const handleExcluirConta = (conta: ContasType) => {
@@ -135,7 +136,7 @@ export default function Contas() {
       const contaComId = { ...novaConta, ctcodigo: Date.now().toString() }
       setContas([...contas, contaComId])
     }
-    setShowModal(false)
+    CLickLabel('modalCadastroConta')
     setContaEditando(null)
   }
 
@@ -289,17 +290,14 @@ export default function Contas() {
           </div>
         )}
 
-        {/* Modal */}
-        {showModal && (
-          <ModalCadastroConta
-            conta={contaEditando}
-            onSave={handleSalvarConta}
-            onClose={() => {
-              setShowModal(false)
-              setContaEditando(null)
-            }}
-          />
-        )}
+        <ModalCadastroConta
+          conta={contaEditando}
+          onSave={handleSalvarConta}
+          onClose={() => {
+            CLickLabel('modalCadastroConta')
+            setContaEditando(null)
+          }}
+        />
       </div>
     </BaseLayout>
   )

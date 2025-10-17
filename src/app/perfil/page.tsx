@@ -1,6 +1,6 @@
 'use client'
 import { AuthUser } from '@/services/auth'
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import BaseLayout from '@/templates/BaseLayout'
 import { UsuariosType } from '@/types/UsuairosType'
 import { useSelector } from 'react-redux'
@@ -10,32 +10,20 @@ import {
   Envelope,
   Calendar,
   GenderIntersex,
-  Palette,
-  Globe,
-  CurrencyDollar,
-  Bell,
   Shield,
   Key,
-  Trash,
   Pencil,
   Check,
-  X,
   UserCircle,
   Lock,
   Eye,
-  EyeSlash,
-  Gear,
-  Download,
-  Upload,
-  Warning
+  EyeSlash
 } from '@phosphor-icons/react'
 import InputComponent from '@/components/Input'
 import { Button } from '@/components/Button'
 import { useForm } from 'react-hook-form'
-import TextRequired from '@/components/TextRequired'
 import toast from 'react-hot-toast'
 import { Card } from '@/components/Card'
-import HistoricoAtividades from '@/components/Perfil/HistoricoAtividades'
 
 /**
  * Página de perfil do usuário completa
@@ -47,7 +35,6 @@ export default function Perfil() {
   const user: UsuariosType = useSelector((state: any) => state.userReducer)
   const [editandoPerfil, setEditandoPerfil] = useState(false)
   const [editandoSenha, setEditandoSenha] = useState(false)
-  const [editandoConfiguracoes, setEditandoConfiguracoes] = useState(false)
   const [mostrandoSenha, setMostrandoSenha] = useState(false)
   const [mostrandoNovaSenha, setMostrandoNovaSenha] = useState(false)
   const [mostrandoConfirmarSenha, setMostrandoConfirmarSenha] = useState(false)
@@ -100,7 +87,6 @@ export default function Perfil() {
     }
   })
 
-  // Estatísticas mockadas
   const estatisticas = {
     contasAtivas: 3,
     transacoesMes: 47,
@@ -126,45 +112,6 @@ export default function Perfil() {
         return 'Outro'
       default:
         return 'Não informado'
-    }
-  }
-
-  const getTemaText = (tema: string) => {
-    switch (tema) {
-      case 'CLARO':
-        return 'Claro'
-      case 'ESCURO':
-        return 'Escuro'
-      case 'SISTEMA':
-        return 'Sistema'
-      default:
-        return 'Claro'
-    }
-  }
-
-  const getMoedaText = (moeda: string) => {
-    switch (moeda) {
-      case 'BRL':
-        return 'Real (R$)'
-      case 'USD':
-        return 'Dólar ($)'
-      case 'EUR':
-        return 'Euro (€)'
-      default:
-        return 'Real (R$)'
-    }
-  }
-
-  const getIdiomaText = (idioma: string) => {
-    switch (idioma) {
-      case 'PT':
-        return 'Português'
-      case 'EN':
-        return 'English'
-      case 'ES':
-        return 'Español'
-      default:
-        return 'Português'
     }
   }
 
@@ -212,23 +159,6 @@ export default function Perfil() {
     }
   }
 
-  const handleSalvarConfiguracoes = async (data: any) => {
-    setCarregando(true)
-    try {
-      // Simular delay da API
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      // Aqui você implementaria a chamada para a API
-      toast.success('Configurações salvas com sucesso!')
-      setEditandoConfiguracoes(false)
-      resetConfig()
-    } catch (error) {
-      toast.error('Erro ao salvar configurações')
-    } finally {
-      setCarregando(false)
-    }
-  }
-
   const handleCancelarEdicao = (tipo: 'perfil' | 'senha' | 'configuracoes') => {
     switch (tipo) {
       case 'perfil':
@@ -240,7 +170,6 @@ export default function Perfil() {
         resetSenha()
         break
       case 'configuracoes':
-        setEditandoConfiguracoes(false)
         resetConfig()
         break
     }
@@ -259,25 +188,9 @@ export default function Perfil() {
     }
   }
 
-  const handleExcluirConta = () => {
-    if (
-      confirm(
-        'Tem certeza que deseja excluir sua conta? Esta ação não pode ser desfeita.'
-      )
-    ) {
-      // Implementar lógica de exclusão
-      toast.error('Funcionalidade de exclusão não implementada')
-    }
-  }
-
-  const handleExportarDados = () => {
-    // Implementar exportação de dados
-    toast.success('Dados exportados com sucesso!')
-  }
-
   return (
     <BaseLayout title="Meu Perfil">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
@@ -408,9 +321,8 @@ export default function Perfil() {
                 </div>
                 <button
                   onClick={() => setEditandoPerfil(!editandoPerfil)}
-                  className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 transition-colors">
+                  className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 transition-colors cursor-pointer">
                   <Pencil size={16} />
-                  <span className="font-medium">Editar</span>
                 </button>
               </div>
 
@@ -498,7 +410,7 @@ export default function Perfil() {
                       <input
                         type="date"
                         {...registerPerfil('usdataNascimento')}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        className="w-full px-4 py-3 border border-gray-300 placeholder:text-gray-500 text-gray-500 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       />
                     </div>
 
@@ -508,7 +420,7 @@ export default function Perfil() {
                       </label>
                       <select
                         {...registerPerfil('usgenero')}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        className="w-full px-4 py-3 border border-gray-300 placeholder:text-gray-500 text-gray-500 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                         <option value="MASCULINO">Masculino</option>
                         <option value="FEMININO">Feminino</option>
                         <option value="OUTRO">Outro</option>
@@ -575,9 +487,8 @@ export default function Perfil() {
                 </div>
                 <button
                   onClick={() => setEditandoSenha(!editandoSenha)}
-                  className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 transition-colors">
+                  className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 transition-colors cursor-pointer">
                   <Key size={16} />
-                  <span className="font-medium">Alterar Senha</span>
                 </button>
               </div>
 
@@ -748,202 +659,6 @@ export default function Perfil() {
                 </div>
               )}
             </Card>
-
-            {/* Configurações */}
-            <Card className="p-6">
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center space-x-3">
-                  <div className="p-3 bg-purple-100 rounded-xl">
-                    <Gear size={24} className="text-purple-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900">
-                      Preferências
-                    </h3>
-                    <p className="text-gray-600">Personalize sua experiência</p>
-                  </div>
-                </div>
-                <button
-                  onClick={() =>
-                    setEditandoConfiguracoes(!editandoConfiguracoes)
-                  }
-                  className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 transition-colors">
-                  <Gear size={16} />
-                  <span className="font-medium">Editar</span>
-                </button>
-              </div>
-
-              {editandoConfiguracoes ? (
-                <form
-                  onSubmit={handleSubmitConfig(handleSalvarConfiguracoes)}
-                  className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Tema
-                      </label>
-                      <select
-                        {...registerConfig('ustema')}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        <option value="CLARO">Claro</option>
-                        <option value="ESCURO">Escuro</option>
-                        <option value="SISTEMA">Sistema</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Moeda
-                      </label>
-                      <select
-                        {...registerConfig('usmoeda')}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        <option value="BRL">Real (R$)</option>
-                        <option value="USD">Dólar ($)</option>
-                        <option value="EUR">Euro (€)</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Idioma
-                      </label>
-                      <select
-                        {...registerConfig('usidioma')}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        <option value="PT">Português</option>
-                        <option value="EN">English</option>
-                        <option value="ES">Español</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
-                    <Button
-                      type="button"
-                      onClick={() => handleCancelarEdicao('configuracoes')}
-                      title="Cancelar"
-                      className="px-6 py-3 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl font-medium transition-colors"
-                    />
-                    <Button
-                      type="submit"
-                      title="Salvar"
-                      className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-colors"
-                      disabled={carregando}
-                    />
-                  </div>
-                </form>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="flex items-center space-x-3">
-                    <Palette size={20} className="text-gray-400" />
-                    <div>
-                      <p className="text-sm text-gray-500">Tema</p>
-                      <p className="font-medium text-gray-900">
-                        {getTemaText(user.ustema || '')}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <CurrencyDollar size={20} className="text-gray-400" />
-                    <div>
-                      <p className="text-sm text-gray-500">Moeda</p>
-                      <p className="font-medium text-gray-900">
-                        {getMoedaText(user.usmoeda || '')}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <Globe size={20} className="text-gray-400" />
-                    <div>
-                      <p className="text-sm text-gray-500">Idioma</p>
-                      <p className="font-medium text-gray-900">
-                        {getIdiomaText(user.usidioma || '')}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </Card>
-
-            {/* Ações Avançadas */}
-            <Card className="p-6">
-              <div className="flex items-center space-x-3 mb-6">
-                <div className="p-3 bg-orange-100 rounded-xl">
-                  <Warning size={24} className="text-orange-600" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    Ações Avançadas
-                  </h3>
-                  <p className="text-gray-600">Gerenciar dados e conta</p>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                  <div className="flex items-center space-x-3">
-                    <Download size={20} className="text-blue-600" />
-                    <div>
-                      <h4 className="font-medium text-gray-900">
-                        Exportar Dados
-                      </h4>
-                      <p className="text-sm text-gray-600">
-                        Baixar todos os seus dados em formato JSON
-                      </p>
-                    </div>
-                  </div>
-                  <Button
-                    onClick={handleExportarDados}
-                    title="Exportar"
-                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
-                  />
-                </div>
-
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                  <div className="flex items-center space-x-3">
-                    <Upload size={20} className="text-green-600" />
-                    <div>
-                      <h4 className="font-medium text-gray-900">
-                        Importar Dados
-                      </h4>
-                      <p className="text-sm text-gray-600">
-                        Importar dados de outros sistemas
-                      </p>
-                    </div>
-                  </div>
-                  <Button
-                    onClick={() =>
-                      toast('Funcionalidade em desenvolvimento', { icon: 'ℹ️' })
-                    }
-                    title="Importar"
-                    className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
-                  />
-                </div>
-
-                <div className="flex items-center justify-between p-4 bg-red-50 rounded-lg border border-red-200">
-                  <div className="flex items-center space-x-3">
-                    <Trash size={20} className="text-red-600" />
-                    <div>
-                      <h4 className="font-medium text-red-900">
-                        Excluir Conta
-                      </h4>
-                      <p className="text-sm text-red-700">
-                        Esta ação não pode ser desfeita
-                      </p>
-                    </div>
-                  </div>
-                  <Button
-                    onClick={handleExcluirConta}
-                    title="Excluir"
-                    className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
-                  />
-                </div>
-              </div>
-            </Card>
-
-            {/* Histórico de Atividades */}
-            <HistoricoAtividades />
           </div>
         </div>
       </div>
