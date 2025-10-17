@@ -21,7 +21,6 @@ import { validateEmail, validateFullName } from '@/utils/validators'
 import toast from 'react-hot-toast'
 import BaseApp from '@/components/BaseApp'
 import { criarUsuario } from '@/store/Usuarios'
-import { fileToBase64 } from '@/utils/fileToBase64'
 import { UsuariosType } from '@/types/UsuairosType'
 
 export default function CadastrarUsuario() {

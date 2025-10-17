@@ -1,309 +1,492 @@
 'use client'
 import { AuthUser } from '@/services/auth'
-import React, { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { UsuarioType } from '@/types/UsuarioType'
-import { useRouter } from 'next/navigation'
+import React, { useState, useEffect } from 'react'
 import BaseLayout from '@/templates/BaseLayout'
-import { FinanceService } from '@/services/finance'
 import { TransacoesType } from '@/types/TransacoesType'
+import { TipoTransacoesEnum } from '@/enums/TipoTransacoesEnum'
+import { ContasType } from '@/types/ContasType'
+import { categoriasPadrao } from '@/types/CategoriasType'
 import {
   Plus,
-  Receipt,
   ArrowUpRight,
-  ArrowDownRight,
-  Calendar,
-  Bank,
+  ArrowDownLeft,
+  Pencil,
+  Trash,
+  Receipt,
+  Repeat,
   MagnifyingGlass,
-  Funnel
+  Faders
 } from '@phosphor-icons/react'
-import { Button } from '@/components/Button'
+import ModalTransacao from './_components/ModalTransacao'
 
-export default function TransacoesPage() {
+/**
+ * Página de gerenciamento de transações financeiras
+ * @description Interface completa para CRUD de transações (receitas e despesas)
+ * @author Sistema
+ */
+export default function Transacoes() {
   AuthUser()
-  const router = useRouter()
-  const dispatch = useDispatch()
-  const user: UsuarioType = useSelector((state: any) => state.userReducer)
-
   const [transacoes, setTransacoes] = useState<TransacoesType[]>([])
-  const [loading, setLoading] = useState(true)
-  const [filtros, setFiltros] = useState({
-    tipo: '',
-    dataInicio: '',
-    dataFim: ''
-  })
+  const [contas, setContas] = useState<ContasType[]>([])
+  const [showModal, setShowModal] = useState(false)
+  const [transacaoEditando, setTransacaoEditando] =
+    useState<TransacoesType | null>(null)
+  const [filtroTipo, setFiltroTipo] = useState<'TODAS' | 'RECEITA' | 'DESPESA'>(
+    'TODAS'
+  )
+  const [filtroConta, setFiltroConta] = useState<string>('TODAS')
+  const [busca, setBusca] = useState('')
 
-  const formatCurrency = (value: number) => {
-    return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+  // Dados mockados para demonstração
+  useEffect(() => {
+    const contasMockadas: ContasType[] = [
+      {
+        ctcodigo: '1',
+        ctnome: 'Conta Corrente Principal',
+        cttitular: 'user1',
+        ctsaldo: '5420.50',
+        ctbanco: '001',
+        cttipoconta: 'CORRENTE' as any,
+        ctativo: true
+      },
+      {
+        ctcodigo: '2',
+        ctnome: 'Poupança',
+        cttitular: 'user1',
+        ctsaldo: '8500.00',
+        ctbanco: '001',
+        cttipoconta: 'POUPANCA' as any,
+        ctativo: true
+      }
+    ]
+    setContas(contasMockadas)
+
+    const transacoesMockadas: TransacoesType[] = [
+      {
+        trcodigo: '1',
+        trdata: '2024-01-15',
+        trvalor: '8500.00',
+        trdescricao: 'Salário Janeiro',
+        trcategoria: 'Salário',
+        trconta: '1',
+        trusuario: 'user1',
+        trtipo: 'RECEITA',
+        trrecorrente: false,
+        trtags: ['salário', 'receita']
+      },
+      {
+        trcodigo: '2',
+        trdata: '2024-01-14',
+        trvalor: '320.50',
+        trdescricao: 'Supermercado Extra',
+        trcategoria: 'Alimentação',
+        trconta: '1',
+        trusuario: 'user1',
+        trtipo: 'DESPESA',
+        trrecorrente: false,
+        trtags: ['alimentação', 'supermercado']
+      },
+      {
+        trcodigo: '3',
+        trdata: '2024-01-13',
+        trvalor: '180.00',
+        trdescricao: 'Combustível Shell',
+        trcategoria: 'Transporte',
+        trconta: '1',
+        trusuario: 'user1',
+        trtipo: 'DESPESA',
+        trrecorrente: false,
+        trtags: ['transporte', 'combustível']
+      },
+      {
+        trcodigo: '4',
+        trdata: '2024-01-12',
+        trvalor: '1200.00',
+        trdescricao: 'Freelance Design',
+        trcategoria: 'Freelance',
+        trconta: '1',
+        trusuario: 'user1',
+        trtipo: 'RECEITA',
+        trrecorrente: false,
+        trtags: ['freelance', 'trabalho']
+      },
+      {
+        trcodigo: '5',
+        trdata: '2024-01-10',
+        trvalor: '45.90',
+        trdescricao: 'Netflix',
+        trcategoria: 'Lazer',
+        trconta: '1',
+        trusuario: 'user1',
+        trtipo: 'DESPESA',
+        trrecorrente: true,
+        trtags: ['streaming', 'lazer']
+      },
+      {
+        trcodigo: '6',
+        trdata: '2024-01-08',
+        trvalor: '2200.00',
+        trdescricao: 'Aluguel',
+        trcategoria: 'Moradia',
+        trconta: '1',
+        trusuario: 'user1',
+        trtipo: 'DESPESA',
+        trrecorrente: true,
+        trtags: ['moradia', 'aluguel']
+      }
+    ]
+    setTransacoes(transacoesMockadas)
+  }, [])
+
+  const formatCurrency = (value: string) => {
+    const numValue = parseFloat(value)
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    }).format(numValue)
   }
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('pt-BR')
+    const date = new Date(dateString)
+    return date.toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    })
   }
 
-  const getTipoTransacao = (tipo: string) => {
-    switch (tipo) {
-      case 'RECEITA':
-        return {
-          label: 'Receita',
-          color: 'text-green-600',
-          bgColor: 'bg-green-100'
-        }
-      case 'DESPESA':
-        return {
-          label: 'Despesa',
-          color: 'text-red-600',
-          bgColor: 'bg-red-100'
-        }
-      case 'TRANSFERENCIA':
-        return {
-          label: 'Transferência',
-          color: 'text-blue-600',
-          bgColor: 'bg-blue-100'
-        }
-      case 'INVESTIMENTO':
-        return {
-          label: 'Investimento',
-          color: 'text-purple-600',
-          bgColor: 'bg-purple-100'
-        }
-      default:
-        return {
-          label: 'Outro',
-          color: 'text-gray-600',
-          bgColor: 'bg-gray-100'
-        }
+  const getTipoIcon = (tipo: TipoTransacoesEnum) => {
+    if (tipo === 'RECEITA') {
+      return <ArrowUpRight size={20} className="text-green-600" />
+    }
+    return <ArrowDownLeft size={20} className="text-red-600" />
+  }
+
+  const getTipoColor = (tipo: TipoTransacoesEnum) => {
+    if (tipo === 'RECEITA') {
+      return 'text-green-600 bg-green-50'
+    }
+    return 'text-red-600 bg-red-50'
+  }
+
+  const getCategoriaCor = (categoria: string) => {
+    const categoriaObj = categoriasPadrao.find((c) => c.cgnome === categoria)
+    return categoriaObj?.cgcor || '#6B7280'
+  }
+
+  const getContaNome = (contaId: string) => {
+    const conta = contas.find((c) => c.ctcodigo === contaId)
+    return conta?.ctnome || 'Conta não encontrada'
+  }
+
+  const handleNovaTransacao = () => {
+    setTransacaoEditando(null)
+    setShowModal(true)
+  }
+
+  const handleEditarTransacao = (transacao: TransacoesType) => {
+    setTransacaoEditando(transacao)
+    setShowModal(true)
+  }
+
+  const handleExcluirTransacao = (transacao: TransacoesType) => {
+    if (
+      confirm(
+        `Tem certeza que deseja excluir a transação "${transacao.trdescricao}"?`
+      )
+    ) {
+      setTransacoes(transacoes.filter((t) => t.trcodigo !== transacao.trcodigo))
     }
   }
 
-  const loadTransacoes = async () => {
-    try {
-      setLoading(true)
-      const response = await FinanceService.getTransacoes(filtros)
-      setTransacoes(response.data || [])
-    } catch (error) {
-      console.error('Erro ao carregar transações:', error)
-    } finally {
-      setLoading(false)
+  const handleSalvarTransacao = (novaTransacao: TransacoesType) => {
+    if (transacaoEditando) {
+      // Editar transação existente
+      setTransacoes(
+        transacoes.map((t) =>
+          t.trcodigo === transacaoEditando.trcodigo
+            ? { ...novaTransacao, trcodigo: transacaoEditando.trcodigo }
+            : t
+        )
+      )
+    } else {
+      // Nova transação
+      const transacaoComId = {
+        ...novaTransacao,
+        trcodigo: Date.now().toString()
+      }
+      setTransacoes([...transacoes, transacaoComId])
     }
+    setShowModal(false)
+    setTransacaoEditando(null)
   }
 
-  useEffect(() => {
-    loadTransacoes()
-  }, [filtros])
+  // Filtrar transações
+  const transacoesFiltradas = transacoes.filter((transacao) => {
+    const passaFiltroTipo =
+      filtroTipo === 'TODAS' || transacao.trtipo === filtroTipo
+    const passaFiltroConta =
+      filtroConta === 'TODAS' || transacao.trconta === filtroConta
+    const passaBusca =
+      !busca ||
+      transacao.trdescricao?.toLowerCase().includes(busca.toLowerCase()) ||
+      transacao.trcategoria?.toLowerCase().includes(busca.toLowerCase()) ||
+      false
 
-  const totalReceitas = transacoes
-    .filter((t) => t.tstipo === 'RECEITA')
-    .reduce((total, t) => total + t.tsvalor, 0)
+    return passaFiltroTipo && passaFiltroConta && passaBusca
+  })
 
-  const totalDespesas = transacoes
-    .filter((t) => t.tstipo === 'DESPESA')
-    .reduce((total, t) => total + t.tsvalor, 0)
+  // Calcular totais
+  const totalReceitas = transacoesFiltradas
+    .filter((t) => t.trtipo === 'RECEITA')
+    .reduce((total, t) => total + parseFloat(t.trvalor), 0)
 
-  const saldo = totalReceitas - totalDespesas
+  const totalDespesas = transacoesFiltradas
+    .filter((t) => t.trtipo === 'DESPESA')
+    .reduce((total, t) => total + parseFloat(t.trvalor), 0)
 
   return (
-    <BaseLayout title="Transações">
-      <div className="space-y-6">
+    <BaseLayout title="Transações Financeiras">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Transações</h1>
-            <p className="text-gray-600">
-              Histórico de movimentações financeiras
-            </p>
+        <div className="mb-8">
+          <div className="md:flex md:items-center md:justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                Transações 💰
+              </h1>
+              <p className="text-gray-600 text-lg">
+                Gerencie suas receitas e despesas
+              </p>
+            </div>
+            <div className="mt-4 md:mt-0">
+              <button
+                onClick={handleNovaTransacao}
+                className="inline-flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-medium transition-colors">
+                <Plus size={20} />
+                <span>Nova Transação</span>
+              </button>
+            </div>
           </div>
-          <Button
-            onClick={() => router.push('/finance/transacoes/nova')}
-            className="bg-blue-600 hover:bg-blue-700 text-white">
-            <Plus size={20} />
-            Nova Transação
-          </Button>
         </div>
 
         {/* Resumo */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-lg p-6 text-white">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="bg-gradient-to-r from-green-600 to-green-700 rounded-2xl p-6 text-white">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-green-100">Receitas</p>
-                <p className="text-2xl font-bold">
-                  {formatCurrency(totalReceitas)}
+                <h3 className="text-lg font-medium mb-1">Total Receitas</h3>
+                <p className="text-3xl font-bold">
+                  {formatCurrency(totalReceitas.toString())}
                 </p>
               </div>
-              <ArrowUpRight size={32} className="text-green-200" />
+              <div className="p-2 bg-white bg-opacity-20 rounded-xl">
+                <ArrowUpRight size={32} className="text-black" />
+              </div>
             </div>
           </div>
 
-          <div className="bg-gradient-to-r from-red-500 to-red-600 rounded-lg p-6 text-white">
+          <div className="bg-gradient-to-r from-red-600 to-red-700 rounded-2xl p-6 text-white">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-red-100">Despesas</p>
-                <p className="text-2xl font-bold">
-                  {formatCurrency(totalDespesas)}
+                <h3 className="text-lg font-medium mb-1">Total Despesas</h3>
+                <p className="text-3xl font-bold">
+                  {formatCurrency(totalDespesas.toString())}
                 </p>
               </div>
-              <ArrowDownRight size={32} className="text-red-200" />
+              <div className="p-2 bg-white bg-opacity-20 rounded-xl">
+                <ArrowDownLeft size={32} className="text-black" />
+              </div>
             </div>
           </div>
 
-          <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-6 text-white">
+          <div
+            className={`rounded-2xl p-6 text-white ${
+              totalReceitas - totalDespesas >= 0
+                ? 'bg-gradient-to-r from-blue-600 to-blue-700'
+                : 'bg-gradient-to-r from-orange-600 to-orange-700'
+            }`}>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-blue-100">Saldo</p>
-                <p className="text-2xl font-bold">{formatCurrency(saldo)}</p>
+                <h3 className="text-lg font-medium mb-1">Saldo</h3>
+                <p className="text-3xl font-bold">
+                  {formatCurrency((totalReceitas - totalDespesas).toString())}
+                </p>
               </div>
-              <Receipt size={32} className="text-blue-200" />
+              <div className="p-2 bg-white bg-opacity-20 rounded-xl">
+                <Receipt size={32} className="text-black" />
+              </div>
             </div>
           </div>
         </div>
 
         {/* Filtros */}
-        <div className="bg-white rounded-lg p-4 shadow-md">
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
-              <Funnel size={20} className="text-gray-500" />
-              <span className="text-sm font-medium text-gray-700">
-                Filtros:
-              </span>
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-8">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+            <div className="flex items-center space-x-4">
+              <div className="relative">
+                <MagnifyingGlass
+                  size={20}
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                />
+                <input
+                  type="text"
+                  placeholder="Buscar transações..."
+                  value={busca}
+                  onChange={(e) => setBusca(e.target.value)}
+                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder:text-gray-400"
+                />
+              </div>
             </div>
 
-            <select
-              value={filtros.tipo}
-              onChange={(e) => setFiltros({ ...filtros, tipo: e.target.value })}
-              className="border border-gray-300 rounded-md px-3 py-2 text-sm">
-              <option value="">Todos os tipos</option>
-              <option value="RECEITA">Receitas</option>
-              <option value="DESPESA">Despesas</option>
-              <option value="TRANSFERENCIA">Transferências</option>
-              <option value="INVESTIMENTO">Investimentos</option>
-            </select>
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <Faders size={20} className="text-gray-400" />
+                <select
+                  value={filtroTipo}
+                  onChange={(e) => setFiltroTipo(e.target.value as any)}
+                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder:text-gray-400 text-gray-400">
+                  <option value="TODAS">Todas</option>
+                  <option value="RECEITA">Receitas</option>
+                  <option value="DESPESA">Despesas</option>
+                </select>
+              </div>
 
-            <input
-              type="date"
-              value={filtros.dataInicio}
-              onChange={(e) =>
-                setFiltros({ ...filtros, dataInicio: e.target.value })
-              }
-              className="border border-gray-300 rounded-md px-3 py-2 text-sm"
-              placeholder="Data início"
-            />
-
-            <input
-              type="date"
-              value={filtros.dataFim}
-              onChange={(e) =>
-                setFiltros({ ...filtros, dataFim: e.target.value })
-              }
-              className="border border-gray-300 rounded-md px-3 py-2 text-sm"
-              placeholder="Data fim"
-            />
+              <select
+                value={filtroConta}
+                onChange={(e) => setFiltroConta(e.target.value)}
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder:text-gray-400 text-gray-400">
+                <option value="TODAS">Todas as contas</option>
+                {contas.map((conta) => (
+                  <option key={conta.ctcodigo} value={conta.ctcodigo}>
+                    {conta.ctnome}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
 
         {/* Lista de Transações */}
-        {loading ? (
-          <div className="space-y-4">
-            {[1, 2, 3].map((i) => (
-              <div
-                key={i}
-                className="bg-white rounded-lg p-4 shadow-md animate-pulse">
-                <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                <div className="h-6 bg-gray-200 rounded w-1/2 mb-2"></div>
-                <div className="h-4 bg-gray-200 rounded w-1/3"></div>
-              </div>
-            ))}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h3 className="text-lg font-semibold text-gray-900">
+              {transacoesFiltradas.length} transação
+              {transacoesFiltradas.length !== 1 ? 'ões' : ''} encontrada
+              {transacoesFiltradas.length !== 1 ? 's' : ''}
+            </h3>
           </div>
-        ) : (
-          <div className="space-y-4">
-            {transacoes.map((transacao) => {
-              const tipoInfo = getTipoTransacao(transacao.tstipo)
-              return (
-                <div
-                  key={transacao.tscodigo}
-                  className="bg-white rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      <div className={`p-2 rounded-full ${tipoInfo.bgColor}`}>
-                        {transacao.tstipo === 'RECEITA' ? (
-                          <ArrowUpRight size={20} className={tipoInfo.color} />
-                        ) : (
-                          <ArrowDownRight
-                            size={20}
-                            className={tipoInfo.color}
-                          />
-                        )}
-                      </div>
 
-                      <div>
-                        <h3 className="font-semibold text-gray-900">
-                          {transacao.tstitulo}
-                        </h3>
-                        <div className="flex items-center space-x-4 text-sm text-gray-500">
-                          <span
-                            className={`px-2 py-1 rounded-full text-xs font-medium ${tipoInfo.bgColor} ${tipoInfo.color}`}>
-                            {tipoInfo.label}
+          <div className="divide-y divide-gray-200">
+            {transacoesFiltradas.map((transacao) => (
+              <div
+                key={transacao.trcodigo}
+                className="p-6 hover:bg-gray-50 transition-colors group">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    <div
+                      className={`p-3 rounded-xl ${getTipoColor(
+                        transacao.trtipo
+                      )}`}>
+                      {getTipoIcon(transacao.trtipo)}
+                    </div>
+                    <div>
+                      <h4 className="font-medium text-gray-900 group-hover:text-gray-700">
+                        {transacao.trdescricao}
+                      </h4>
+                      <div className="flex items-center space-x-3 mt-1">
+                        <span
+                          className="text-xs px-2 py-1 rounded-full text-white font-medium"
+                          style={{
+                            backgroundColor: getCategoriaCor(
+                              transacao.trcategoria || ''
+                            )
+                          }}>
+                          {transacao.trcategoria}
+                        </span>
+                        <span className="text-sm text-gray-500">
+                          {getContaNome(transacao.trconta)}
+                        </span>
+                        <span className="text-sm text-gray-500">
+                          {formatDate(transacao.trdata)}
+                        </span>
+                        {transacao.trrecorrente && (
+                          <span className="flex items-center space-x-1 text-xs text-blue-600">
+                            <Repeat size={12} />
+                            <span>Recorrente</span>
                           </span>
-                          <div className="flex items-center space-x-1">
-                            <Calendar size={14} />
-                            <span>{formatDate(transacao.tsquando)}</span>
-                          </div>
-                          {transacao.conta && (
-                            <div className="flex items-center space-x-1">
-                              <Bank size={14} />
-                              <span>{transacao.conta.ctconta}</span>
-                            </div>
-                          )}
-                        </div>
-                        {transacao.tsdescricao && (
-                          <p className="text-sm text-gray-600 mt-1">
-                            {transacao.tsdescricao}
-                          </p>
                         )}
                       </div>
                     </div>
+                  </div>
 
+                  <div className="flex items-center space-x-4">
                     <div className="text-right">
-                      <p className={`text-lg font-bold ${tipoInfo.color}`}>
-                        {transacao.tstipo === 'RECEITA' ? '+' : '-'}
-                        {formatCurrency(transacao.tsvalor)}
+                      <p
+                        className={`text-lg font-bold ${
+                          transacao.trtipo === 'RECEITA'
+                            ? 'text-green-600'
+                            : 'text-red-600'
+                        }`}>
+                        {transacao.trtipo === 'RECEITA' ? '+' : '-'}
+                        {formatCurrency(transacao.trvalor)}
                       </p>
-                      {transacao.tsstatus && (
-                        <span
-                          className={`text-xs px-2 py-1 rounded-full ${
-                            transacao.tsstatus === 'CONFIRMADA'
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-yellow-100 text-yellow-800'
-                          }`}>
-                          {transacao.tsstatus}
-                        </span>
-                      )}
+                    </div>
+
+                    <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button
+                        onClick={() => handleEditarTransacao(transacao)}
+                        className="p-2 text-gray-400 hover:text-blue-600 transition-colors cursor-pointer">
+                        <Pencil size={16} />
+                      </button>
+                      <button
+                        onClick={() => handleExcluirTransacao(transacao)}
+                        className="p-2 text-gray-400 hover:text-red-600 transition-colors cursor-pointer">
+                        <Trash size={16} />
+                      </button>
                     </div>
                   </div>
                 </div>
-              )
-            })}
+              </div>
+            ))}
           </div>
-        )}
 
-        {!loading && transacoes.length === 0 && (
-          <div className="text-center py-12">
-            <Receipt size={64} className="mx-auto text-gray-300 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              Nenhuma transação encontrada
-            </h3>
-            <p className="text-gray-600 mb-4">
-              {Object.values(filtros).some((f) => f)
-                ? 'Tente ajustar os filtros ou criar uma nova transação'
-                : 'Comece registrando sua primeira transação'}
-            </p>
-            <Button
-              onClick={() => router.push('/finance/transacoes/nova')}
-              className="bg-blue-600 hover:bg-blue-700 text-white">
-              <Plus size={20} />
-              Nova Transação
-            </Button>
-          </div>
+          {transacoesFiltradas.length === 0 && (
+            <div className="text-center py-12">
+              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Receipt size={24} className="text-gray-400" />
+              </div>
+              <p className="text-gray-500 font-medium">
+                Nenhuma transação encontrada
+              </p>
+              <p className="text-sm text-gray-400 mt-1">
+                {busca || filtroTipo !== 'TODAS' || filtroConta !== 'TODAS'
+                  ? 'Tente ajustar os filtros de busca'
+                  : 'Comece adicionando sua primeira transação'}
+              </p>
+              {!busca && filtroTipo === 'TODAS' && filtroConta === 'TODAS' && (
+                <button
+                  onClick={handleNovaTransacao}
+                  className="mt-4 inline-flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-medium transition-colors">
+                  <Plus size={20} />
+                  <span>Adicionar Transação</span>
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Modal */}
+        {showModal && (
+          <ModalTransacao
+            transacao={transacaoEditando}
+            contas={contas}
+            onSave={handleSalvarTransacao}
+            onClose={() => {
+              setShowModal(false)
+              setTransacaoEditando(null)
+            }}
+          />
         )}
       </div>
     </BaseLayout>

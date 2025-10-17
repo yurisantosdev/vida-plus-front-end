@@ -3,24 +3,27 @@ import './globals.css'
 import ReduxProvider from '@/redux/ReduxProvider'
 
 export const metadata: Metadata = {
-  title: 'Vida+ | Gestão Inteligente de Veículos',
-  description: 'Plataforma completa para gestão de veículos, manutenções, abastecimentos e controle financeiro. Simplifique a administração da sua frota com o Vida+.',
-  keywords: 'gestão de veículos, manutenção automotiva, controle de frota, abastecimentos, vida plus',
+  title: 'Vida+ | Gestão Inteligente de Finanças Pessoais',
+  description:
+    'Plataforma completa para gestão de finanças pessoais. Controle suas contas, transações, receitas e despesas de forma inteligente e profissional.',
+  keywords:
+    'gestão financeira, finanças pessoais, controle de gastos, receitas, despesas, vida plus, orçamento pessoal',
   authors: [{ name: 'Vida+ Team' }],
   creator: 'Vida+',
   publisher: 'Vida+',
   formatDetection: {
     email: false,
     address: false,
-    telephone: false,
+    telephone: false
   },
   metadataBase: new URL('https://vidaplus.com.br'),
   alternates: {
-    canonical: '/',
+    canonical: '/'
   },
   openGraph: {
-    title: 'Vida+ | Gestão Inteligente de Veículos',
-    description: 'Plataforma completa para gestão de veículos, manutenções, abastecimentos e controle financeiro.',
+    title: 'Vida+ | Gestão Inteligente de Finanças Pessoais',
+    description:
+      'Plataforma completa para gestão de finanças pessoais. Controle suas contas, transações e orçamento de forma inteligente.',
     url: 'https://vidaplus.com.br',
     siteName: 'Vida+',
     images: [
@@ -28,17 +31,18 @@ export const metadata: Metadata = {
         url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'Vida+ - Gestão Inteligente de Veículos',
-      },
+        alt: 'Vida+ - Gestão Inteligente de Finanças Pessoais'
+      }
     ],
     locale: 'pt_BR',
-    type: 'website',
+    type: 'website'
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Vida+ | Gestão Inteligente de Veículos',
-    description: 'Plataforma completa para gestão de veículos, manutenções, abastecimentos e controle financeiro.',
-    images: ['/twitter-image.png'],
+    title: 'Vida+ | Gestão Inteligente de Finanças Pessoais',
+    description:
+      'Plataforma completa para gestão de finanças pessoais. Controle suas contas, transações e orçamento de forma inteligente.',
+    images: ['/twitter-image.png']
   },
   robots: {
     index: true,
@@ -48,12 +52,12 @@ export const metadata: Metadata = {
       follow: true,
       'max-video-preview': -1,
       'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
+      'max-snippet': -1
+    }
   },
   verification: {
-    google: 'your-google-verification-code',
-  },
+    google: 'your-google-verification-code'
+  }
 }
 
 export default function RootLayout({
@@ -69,7 +73,10 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#2563eb" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=5"
+        />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="Vida+" />

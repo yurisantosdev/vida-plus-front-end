@@ -2,7 +2,6 @@
 import React, { useEffect } from 'react'
 import { Toaster } from 'react-hot-toast'
 import { BaseAppInterface } from '@/Interfaces/BaseAppInterface'
-import Navbar from './Navbar'
 import { LoadingPage } from './LoadingSpinner'
 
 export default function BaseApp({
@@ -30,8 +29,7 @@ export default function BaseApp({
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className={`${styleBase && 'max-w-5xl mx-auto min-h-screen'}`}>
-        {navbar && <Navbar />}
+      <div className={`${styleBase && 'max-w-7xl mx-auto min-h-screen'}`}>
         {extraComponentTitle && extraComponentTitle}
         <main className="flex-1">{children}</main>
       </div>

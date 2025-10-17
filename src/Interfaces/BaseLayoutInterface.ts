@@ -4,10 +4,6 @@ export interface BaseLayoutInterface {
   children: ReactNode
   title?: string
   showBackButton?: boolean
-  backButtonPath?: string
-  backButtonText?: string
-  extraHeaderContent?: ReactNode
-  buttonVoltar?: boolean
   navbar?: boolean
   voltar?: boolean
   styleBase?: boolean

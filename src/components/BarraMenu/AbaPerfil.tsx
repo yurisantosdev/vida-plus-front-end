@@ -1,12 +1,12 @@
 import { X, User, Envelope, Calendar, LockKey } from '@phosphor-icons/react'
 import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { UsuarioType } from '@/types/UsuariosType'
 import { Button } from '../Button'
 import { CLickLabel } from '@/services/clickLabel'
+import { UsuariosType } from '@/types/UsuairosType'
 
 export default function AbaPerfil() {
-  const user: UsuarioType = useSelector((state: any) => state.userReducer)
+  const user: UsuariosType = useSelector((state: any) => state.userReducer)
   const dispatch = useDispatch()
 
   return (

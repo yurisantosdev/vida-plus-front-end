@@ -1,4 +1,4 @@
-import { TipoContasEnum } from '../enums/TipoContasEnum';
+import { TipoContasType } from '../enums/TipoContasEnum';
 
 export type ContasType = {
   ctcodigo?: string;
@@ -6,7 +6,11 @@ export type ContasType = {
   cttitular: string;
   ctsaldo: string;
   ctbanco: string;
-  cttipoconta: TipoContasEnum;
+  cttipoconta: TipoContasType;
+  ctlimite?: string;
+  ctdescricao?: string;
+  ctcor?: string;
+  ctativo?: boolean;
   createdAt?: string;
   updatedAt?: string;
 };

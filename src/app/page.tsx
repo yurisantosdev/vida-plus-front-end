@@ -82,7 +82,7 @@ export default function Home() {
             <div className="w-full max-w-md">
               <div className="text-center mb-8 lg:hidden">
                 <h1 className="text-3xl font-bold text-gray-900 mb-2">Vida+</h1>
-                <p className="text-gray-600">Gestão Inteligente de Veículos</p>
+                <p className="text-gray-600">Gestão Inteligente de Finanças</p>
               </div>
 
               <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
