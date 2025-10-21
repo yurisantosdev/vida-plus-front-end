@@ -19,12 +19,6 @@ import { BaseLayoutInterface } from '@/Interfaces/BaseLayoutInterface'
 import { logoutUser } from '@/redux/user/actions'
 import toast from 'react-hot-toast'
 
-/**
- * Layout base profissional para o aplicativo financeiro
- * @description Layout principal com navegação lateral e header moderno
- * @param {BaseLayoutInterface} props - Propriedades do layout
- * @author Sistema
- */
 export default function BaseLayout({
   children,
   title,
@@ -58,12 +52,6 @@ export default function BaseLayout({
       href: '/finance/transacoes',
       icon: <Receipt size={20} />,
       active: title === 'Transações Financeiras'
-    },
-    {
-      name: 'Relatórios',
-      href: '/finance/relatorios',
-      icon: <ChartLine size={20} />,
-      active: title === 'Relatórios'
     }
   ]
 

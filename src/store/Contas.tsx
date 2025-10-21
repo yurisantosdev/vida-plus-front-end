@@ -23,3 +23,25 @@ export const cadastrarConta = async (data: ContasType) => {
       toast('Não foi possível cadastrar a conta, por favor tente novamente!')
     })
 }
+
+export const atualizarConta = async (data: ContasType) => {
+  return await api
+    .post(`/contas/update/`, data)
+    .then((response) => {
+      return response.data
+    })
+    .catch(() => {
+      toast('Não foi possível atualizar a conta, por favor tente novamente!')
+    })
+}
+
+export const deletarConta = async (ctcodigo: string) => {
+  return await api
+    .delete(`/contas/delete/${ctcodigo}`)
+    .then((response) => {
+      return response.data
+    })
+    .catch(() => {
+      toast('Não foi possível deletar a conta, por favor tente novamente!')
+    })
+}

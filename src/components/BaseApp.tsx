@@ -8,7 +8,6 @@ export default function BaseApp({
   children,
   loading,
   styleBase = true,
-  navbar = true,
   extraComponentTitle
 }: BaseAppInterface) {
   useEffect(() => {

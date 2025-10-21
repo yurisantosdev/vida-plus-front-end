@@ -45,18 +45,14 @@ export default function Transacoes() {
         ctnome: 'Conta Corrente Principal',
         cttitular: 'user1',
         ctsaldo: '5420.50',
-        ctbanco: '001',
-        cttipoconta: 'CORRENTE' as any,
-        ctativo: true
+        cttipoconta: 'CORRENTE' as any
       },
       {
         ctcodigo: '2',
         ctnome: 'Poupança',
         cttitular: 'user1',
         ctsaldo: '8500.00',
-        ctbanco: '001',
-        cttipoconta: 'POUPANCA' as any,
-        ctativo: true
+        cttipoconta: 'POUPANCA' as any
       }
     ]
     setContas(contasMockadas)
